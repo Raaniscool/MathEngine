@@ -141,7 +141,7 @@ Keep the backend from step 4 running in its own terminal.
 # Windows
 cd desktop
 npm install
-npm run check      # typecheck + tests (85) + production build + build verification
+npm run check      # typecheck + tests (111) + production build + build verification
 npm run dev        # starts the Electron window
 ```
 
@@ -209,7 +209,8 @@ $env:MATHENGINE_OLLAMA_MODEL="qwen2.5:1.5b"   # set this to the name from `ollam
 $env:MATHENGINE_OLLAMA_TIMEOUT="120"          # seconds to wait for one reply
 
 # 4. Start the backend in this same window (from the backend folder)
-backend\.venv\Scripts\python.exe -m uvicorn mathengine.api.app:create_app --factory --host 127.0.0.1 --port 8000
+cd backend
+.\.venv\Scripts\python.exe -m uvicorn mathengine.api.app:create_app --factory --host 127.0.0.1 --port 8000
 ```
 
 **Linux / macOS:** the same variables, with `export NAME=value` in place of `$env:NAME="value"`.
