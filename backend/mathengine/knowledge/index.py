@@ -32,7 +32,7 @@ from .loader import LoadedRecord, LoadReport
 from .models import SCHEMA_VERSION
 from .text import phrase_key, tokens
 
-INDEX_FORMAT_VERSION = 2  # 2: authoritative indexes exclude drafts; metadata records what a file contains
+INDEX_FORMAT_VERSION = 3  # 3: normalized synonyms and machine_checked tier; 2: drafts excluded from authoritative index
 DRAFT_CONTENT_EXCLUDED = "excluded"
 DRAFT_CONTENT_INCLUDED = "included"
 

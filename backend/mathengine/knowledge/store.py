@@ -173,3 +173,7 @@ class KnowledgeStore:
 
     def phrase_hits(self, phrase: str) -> list[TermHit]:
         return self._phrase_index.get(phrase, [])
+
+    def vocabulary(self) -> list[str]:
+        """Every indexed term. Used only for typo-tolerant matching."""
+        return list(self._term_index)

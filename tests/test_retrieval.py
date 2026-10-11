@@ -72,8 +72,10 @@ def test_natural_language_requests_find_the_right_concept(retriever, query, expe
 def test_similar_concepts_are_reported_as_ambiguous_not_guessed(retriever):
     result = retriever.search("multiplication", include_drafts=True)
     assert result.status == "ambiguous"
-    returned = {hit.concept_id for hit in result.hits}
-    assert returned == {FACTS, REPEATED}
+    # Exponent laws also mentions "product of powers", so it is returned as a lower-ranked hit.
+    # The clarifying question offers only the two closest, equally good readings.
+    assert {hit.concept_id for hit in result.options} == {FACTS, REPEATED}
+    assert {FACTS, REPEATED} <= {hit.concept_id for hit in result.hits}
     assert "Which one did you mean" in result.message
 
 

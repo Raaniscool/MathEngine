@@ -54,7 +54,7 @@ def test_reviewed_status_requires_reviewer_and_date():
 
 def test_ai_draft_must_not_claim_a_review():
     data = record(verification={"status": "ai_draft", "reviewed_by": "Someone", "reviewed_on": "2026-10-11"})
-    assert "must not claim a review" in _errors(data)
+    assert "must not claim a human review" in _errors(data)
 
 
 def test_ai_generated_content_must_name_its_model():

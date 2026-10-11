@@ -4,10 +4,13 @@ One concept per YAML file, stored in knowledge/<subject>/. Every model uses extr
 so a misspelled field name is reported as an error instead of being silently ignored.
 
 Trust levels (field verification.status):
-  ai_draft  - written or proposed by AI, NOT reviewed by a human. Never written to the authoritative
-              index; it appears only in the developer preview index, on explicit request.
-  reviewed  - checked by a human reviewer. Exercise answers are still machine-checked on every build.
-  verified  - reviewed AND every exercise has a machine-checkable answer (no 'none' checks).
+  ai_draft        - written or proposed by AI, NOT checked. Never written to the authoritative
+                    index; it appears only in the developer preview index, on explicit request.
+  machine_checked - every exercise answer and every formula identity is checked by the deterministic
+                    math engine on every build. The prose is written by AI and has NOT been reviewed by a
+                    person. Included in the authoritative index, labelled as such everywhere it is shown.
+  reviewed        - checked by a human reviewer. Exercise answers are still machine-checked on every build.
+  verified        - reviewed AND every exercise has a machine-checkable answer (no 'none' checks).
 """
 
 from __future__ import annotations
@@ -44,7 +47,7 @@ _CONCEPT_ID_RE = re.compile(CONCEPT_ID_PATTERN)
 ExplanationLevel = Literal["intro", "standard", "advanced"]
 CheckMethod = Literal["exact_numeric", "symbolic_equivalence", "derivative", "solve_equation", "none"]
 AnswerType = Literal["number", "expression", "equation_solution"]
-VerificationStatus = Literal["ai_draft", "reviewed", "verified"]
+VerificationStatus = Literal["ai_draft", "machine_checked", "reviewed", "verified"]
 SourceKind = Literal["textbook", "curriculum", "standard", "website", "internal"]
 
 
@@ -110,6 +113,9 @@ class Verification(_Strict):
     status: VerificationStatus
     reviewed_by: str | None = Field(default=None, max_length=120)
     reviewed_on: date | None = None
+    # Set only for machine_checked: which deterministic checker ran, and when. Never a person's name.
+    checked_by: str | None = Field(default=None, max_length=120)
+    checked_on: date | None = None
     notes: str = Field(default="", max_length=1000)
 
     @model_validator(mode="after")
@@ -118,7 +124,12 @@ class Verification(_Strict):
         if reviewed and (not self.reviewed_by or self.reviewed_on is None):
             raise ValueError(f"status '{self.status}' requires reviewed_by and reviewed_on")
         if not reviewed and (self.reviewed_by or self.reviewed_on is not None):
-            raise ValueError("ai_draft records must not claim a review (remove reviewed_by/reviewed_on)")
+            raise ValueError(f"status '{self.status}' must not claim a human review (remove reviewed_by/reviewed_on)")
+        machine = self.status == "machine_checked"
+        if machine and (not self.checked_by or self.checked_on is None):
+            raise ValueError("status 'machine_checked' requires checked_by and checked_on")
+        if not machine and (self.checked_by or self.checked_on is not None):
+            raise ValueError(f"checked_by/checked_on are only for status 'machine_checked', not '{self.status}'")
         return self
 
 
@@ -240,10 +251,10 @@ class Concept(_Strict):
         exercise_ids = [exercise.id for exercise in self.exercises]
         if len(set(exercise_ids)) != len(exercise_ids):
             raise ValueError("exercise ids must be unique within a concept")
-        if self.verification.status == "verified":
+        if self.verification.status in ("machine_checked", "verified"):
             unchecked = [exercise.id for exercise in self.exercises if exercise.check.method == "none"]
             if unchecked:
                 raise ValueError(
-                    f"status 'verified' requires machine-checkable answers; unchecked: {unchecked}"
+                    f"status '{self.verification.status}' requires machine-checkable answers; unchecked: {unchecked}"
                 )
         return self
