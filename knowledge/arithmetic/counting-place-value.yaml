@@ -1,0 +1,95 @@
+schema_version: 1
+id: arithmetic.counting.place-value
+title: Place value in whole numbers
+aliases:
+  - place value
+  - digit place value
+  - ones tens hundreds
+keywords:
+  - place value
+  - digit
+  - ones
+  - tens
+  - hundreds
+  - thousands
+  - expanded form
+  - counting
+subject: arithmetic
+topic: counting
+subtopic: place-value
+difficulty: 1
+summary: Each digit in a whole number is worth ten times the digit to its right.
+definition: >-
+  Our number system is base ten. The position of a digit gives its value: in 365 the 3 is in the
+  hundreds place (300), the 6 is in the tens place (60) and the 5 is in the ones place (5). Place value
+  is the reason that addition, subtraction and carrying work column by column.
+prerequisites: []
+related:
+  - arithmetic.addition.whole-numbers
+  - arithmetic.subtraction.whole-numbers
+explanations:
+  - level: intro
+    text: >-
+      Read a number from right to left: ones, tens, hundreds, thousands. Each place to the left is worth
+      ten times as much as the place to its right.
+  - level: standard
+    text: >-
+      Write a number in expanded form by giving each digit its place value: 4072 = 4000 + 70 + 2. A zero
+      holds a place: 407 has no tens, so it equals 400 + 0 + 7.
+formulas: []
+worked_examples:
+  - title: Expanded form of a four-digit number
+    problem: Write 4072 in expanded form.
+    steps:
+      - 4072 has 4 thousands, 0 hundreds, 7 tens and 2 ones.
+      - 4 thousands = 4000, 0 hundreds = 0, 7 tens = 70, 2 ones = 2.
+      - 4072 = 4000 + 0 + 70 + 2
+    answer: 4000 + 70 + 2
+exercises:
+  - id: value-of-the-seven
+    prompt: What is the value of the 7 in 4,721?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "700"
+    hints:
+      - "Find the place of the 7 first. Count from the right: ones, tens, hundreds."
+      - The 7 is in the hundreds place, so it means 7 hundreds.
+    feedback_correct: Correct. The 7 is in the hundreds place, worth 700.
+    feedback_incorrect: The 7 is in the hundreds place. Its value is 7 x 100.
+  - id: hundreds-tens-ones
+    prompt: What is 5 hundreds + 3 tens + 9 ones, written as one whole number?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "539"
+    hints:
+      - "Write each digit in its place: 5 in the hundreds, 3 in the tens, 9 in the ones."
+    feedback_correct: Correct. 500 + 30 + 9 = 539.
+    feedback_incorrect: Write 5 hundreds as 500, 3 tens as 30 and 9 ones as 9, then add.
+  - id: tens-in-480
+    prompt: How many tens are in 480?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "48"
+    hints:
+      - One ten is 10. How many 10s make 480?
+    feedback_correct: Correct. 480 is 48 tens.
+    feedback_incorrect: Dropping the last digit of a number gives the number of tens.
+misconceptions:
+  - description: Reading 205 as 2 hundreds and 5 tens.
+    explanation: The middle digit is a zero, so there are no tens. Skipping the zero moves the 5 to the wrong place.
+    correction: 205 is 2 hundreds, 0 tens and 5 ones. Two hundreds and five tens would be 250.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 2, 2.NBT.A.1 (understand place value in three-digit numbers)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

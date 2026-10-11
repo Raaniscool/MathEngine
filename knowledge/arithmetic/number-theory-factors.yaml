@@ -1,0 +1,100 @@
+schema_version: 1
+id: arithmetic.number-theory.factors
+title: Factors of a whole number
+aliases:
+  - factors
+  - factor pairs
+  - factor of a number
+  - find all factors
+keywords:
+  - factor
+  - factors
+  - factor pair
+  - divisor
+  - divides evenly
+  - greatest common factor
+  - GCF
+subject: arithmetic
+topic: number-theory
+subtopic: factors
+difficulty: 3
+summary: A factor divides a whole number exactly; factors come in pairs whose product is the number.
+definition: >-
+  A factor of a whole number n is a whole number that divides n with no remainder. The factors of 12 are
+  1, 2, 3, 4, 6 and 12, because 12 is 1 x 12, 2 x 6 and 3 x 4. Factors come in pairs whose product is n.
+  Every whole number has 1 and itself as factors.
+prerequisites:
+  - arithmetic.multiplication.facts
+  - arithmetic.division.basics
+related:
+  - arithmetic.number-theory.multiples
+  - arithmetic.number-theory.primes
+explanations:
+  - level: intro
+    text: >-
+      To find the factors of a number, test small whole numbers in order and write each pair that multiplies to the number.
+  - level: standard
+    text: >-
+      For 36 the pairs are 1 x 36, 2 x 18, 3 x 12, 4 x 9 and 6 x 6. Once the pair repeats (6 times 6), every factor has been found: 1, 2, 3, 4, 6, 9, 12, 18 and 36. You only need to test divisors up to the square root of the number.
+worked_examples:
+  - title: All factors of 28
+    problem: List all factors of 28.
+    steps:
+      - Test 1, 2, 3, 4, and so on. Pairs found so far are 1 x 28, 2 x 14 and 4 x 7.
+      - 1 x 28 = 28
+      - 2 x 14 = 28
+      - 4 x 7 = 28
+      - The factors are 1, 2, 4, 7, 14 and 28.
+    answer: 1, 2, 4, 7, 14 and 28
+exercises:
+  - id: twelve-has-how-many
+    prompt: How many factors does 12 have?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "6"
+    hints:
+      - "List the pairs: 1 x 12, 2 x 6 and 3 x 4."
+      - Count each number in the pairs once. The factors are 1, 2, 3, 4, 6 and 12.
+    feedback_correct: Correct. The factors of 12 are 1, 2, 3, 4, 6 and 12.
+    feedback_incorrect: List the factor pairs of 12 and count every number that appears.
+  - id: largest-factor-of-45
+    prompt: What is the largest factor of 45 other than 45 itself?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "15"
+    hints:
+      - 45 is 3 x 15.
+    feedback_correct: Correct. 45 = 3 x 15, and 15 is the largest factor below 45.
+    feedback_incorrect: Find the pair that contains the largest factor smaller than 45.
+  - id: greatest-common-factor-12-18
+    prompt: What is the greatest common factor of 12 and 18?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "6"
+    hints:
+      - Factors of 12 are 1, 2, 3, 4, 6, 12. Factors of 18 are 1, 2, 3, 6, 9, 18.
+      - Look for the largest number in both lists.
+    feedback_correct: Correct. 6 is the largest factor shared by 12 and 18.
+    feedback_incorrect: List the factors of both numbers and pick the largest one they share.
+misconceptions:
+  - description: Believing that 1 is not a factor of a number.
+    explanation: 1 divides every whole number exactly, so it is always a factor.
+    correction: 1 x 28 = 28, so 1 and 28 are both factors of 28.
+  - description: Believing that only prime numbers have factors.
+    explanation: A factor only has to divide the number exactly. 12 has six factors, and it is not prime.
+    correction: The factors of 12 are 1, 2, 3, 4, 6 and 12.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 4, 4.OA.B.4 (find all factor pairs for a whole number from 1 to 100)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

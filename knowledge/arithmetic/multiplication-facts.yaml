@@ -8,15 +8,18 @@ aliases:
   - multiplication tables
 keywords:
   - times
+  - multiply
+  - multiplication
   - multiplication facts
   - memorize
   - table
   - product
+  - single-digit products
 subject: arithmetic
 topic: multiplication
 subtopic: facts
 difficulty: 2
-summary: Basic products of single-digit numbers, learned as facts and built from known patterns.
+summary: Products of single-digit whole numbers, learned as facts and built from known patterns.
 definition: >-
   A multiplication fact is a product of two single-digit whole numbers, such as 7 x 8 = 56. Students
   learn these facts so that larger calculations can be broken into known pieces. Strategies include
@@ -24,7 +27,8 @@ definition: >-
 prerequisites:
   - arithmetic.multiplication.repeated-addition
 related:
-  - algebra.exponents.laws
+  - arithmetic.division.basics
+  - arithmetic.number-theory.factors
 explanations:
   - level: intro
     text: >-
@@ -37,7 +41,7 @@ explanations:
   - level: advanced
     text: >-
       The distributive law, a x (b + c) = a x b + a x c, justifies every splitting strategy. Multiplication
-      facts are therefore not isolated memorized items but instances of one structure.
+      facts are therefore instances of one structure rather than isolated items to memorize.
 formulas:
   - name: Distributive splitting
     expression: a*(b+c)
@@ -53,9 +57,10 @@ worked_examples:
   - title: Breaking a fact into easy pieces
     problem: Find 6 x 9 using a fact you already know.
     steps:
-      - 6 x 10 = 60 is easy to remember.
+      - Start from 6 x 10, which is easy to remember.
       - 6 x 9 is one group of 6 less than 6 x 10.
-      - 60 - 6 = 54, so 6 x 9 = 54.
+      - 6 x 10 = 60
+      - 6 x 9 = 60 - 6 = 54
     answer: "54"
 exercises:
   - id: seven-times-eight
@@ -95,15 +100,18 @@ misconceptions:
   - description: Adding instead of multiplying, for example 6 x 4 = 10.
     explanation: 6 + 4 is an addition. The product 6 x 4 means six groups of four.
     correction: 6 x 4 = 4 + 4 + 4 + 4 + 4 + 4 = 24.
+  - description: Using a fact that is almost right, such as 7 x 8 = 54.
+    explanation: 54 is 6 x 9. Facts near each other are easy to confuse when they are not practised.
+    correction: Check with splitting. 7 x 8 = 7 x 5 + 7 x 3 = 35 + 21 = 56.
 sources:
-  - title: Common Core State Standards for Mathematics, grade 3, 3.OA.C.7 (fluently multiply within 100)
+  - title: Common Core State Standards for Mathematics, grade 3, 3.OA.C.7 (fluently multiply and divide within 100)
     kind: standard
 provenance:
   origin: ai_generated
-  author: MathEngine project (seed content)
-  created: 2026-10-11
-  ai_model: Arena coding agent (initial seed content)
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
 verification:
   status: ai_draft
-  notes: Seed example written to demonstrate the schema. Needs human review before it is published.
-version: 0.1.0
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

@@ -1,0 +1,95 @@
+schema_version: 1
+id: arithmetic.number-theory.primes
+title: Prime and composite numbers
+aliases:
+  - prime numbers
+  - prime number
+  - composite numbers
+  - is it prime
+keywords:
+  - prime
+  - composite
+  - factor
+  - factors
+  - divisible
+  - square root
+  - prime factorization
+subject: arithmetic
+topic: number-theory
+subtopic: primes
+difficulty: 3
+summary: A prime has exactly two factors, 1 and itself; a composite has more than two.
+definition: >-
+  A prime number is a whole number greater than 1 whose only factors are 1 and itself. A composite number
+  is a whole number greater than 1 that has more factors. The number 1 is neither prime nor composite. The
+  first primes are 2, 3, 5, 7, 11, 13, 17, 19, 23 and 29. The number 2 is the only even prime. Every whole
+  number greater than 1 is a product of primes, and the primes are unique apart from the order.
+prerequisites:
+  - arithmetic.number-theory.factors
+related:
+  - arithmetic.number-theory.divisibility
+explanations:
+  - level: intro
+    text: >-
+      A prime cannot be split into equal groups except as 1 group of itself or itself groups of 1. For example, 7 can only be 1 x 7.
+  - level: standard
+    text: >-
+      To test whether n is prime, try dividing by the primes up to the square root of n. If none divides n exactly, n is prime. For 91 the square root is about 9.5, and 7 x 13 = 91, so 91 is composite.
+worked_examples:
+  - title: Testing 91
+    problem: Is 91 prime?
+    steps:
+      - The primes up to the square root of 91 (about 9.5) are 2, 3, 5 and 7.
+      - 91 is odd, so 2 does not divide it. Its digits add to 10, so 3 does not divide it. It does not end in 0 or 5, so 5 does not divide it.
+      - 7 x 13 = 91
+    answer: No, 91 is composite because 7 x 13 = 91.
+exercises:
+  - id: smallest-prime-above-twenty
+    prompt: What is the smallest prime number greater than 20?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "23"
+    hints:
+      - Test 21, 22 and 23. 21 = 3 x 7 and 22 = 2 x 11.
+    feedback_correct: Correct. 21 and 22 are composite, so 23 is the next prime.
+    feedback_incorrect: Check each number after 20 for factors other than 1 and itself.
+  - id: primes-between-ten-and-twenty
+    prompt: How many prime numbers are there strictly between 10 and 20?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "4"
+    hints:
+      - The candidates are 11, 13, 15, 17, 19.
+    feedback_correct: Correct. The primes are 11, 13, 17 and 19.
+    feedback_incorrect: Check 11 through 19. 15 is 3 x 5, so it is not prime.
+  - id: largest-prime-factor-of-ninety-one
+    prompt: What is the largest prime factor of 91?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "13"
+    hints:
+      - 91 = 7 x 13. Both factors are prime.
+    feedback_correct: Correct. 91 = 7 x 13, and 13 is the larger prime factor.
+    feedback_incorrect: Factor 91 into two numbers, then check which of them are prime.
+misconceptions:
+  - description: Believing that 1 is a prime number.
+    explanation: A prime needs exactly two factors. 1 has only one factor, itself.
+    correction: 1 is neither prime nor composite.
+  - description: Believing that every odd number is prime.
+    explanation: Odd numbers can still have factors. 9 = 3 x 3 and 15 = 3 x 5.
+    correction: Test for factors before deciding. 9 and 15 are composite.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 4, 4.OA.B.4 (determine whether a number is prime or composite)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

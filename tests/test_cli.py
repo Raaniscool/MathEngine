@@ -17,8 +17,8 @@ def test_build_index_writes_both_indexes(knowledge_dir, data_dir, capsys):
     assert (data_dir / "generated" / "knowledge.sqlite").is_file()
     assert (data_dir / "generated" / "knowledge-dev.sqlite").is_file()
     out = capsys.readouterr().out
-    assert "0 reviewed concept(s), 5 unreviewed draft(s) excluded" in out
-    assert "including 5 unreviewed draft(s)" in out
+    assert "0 reviewed concept(s), 31 unreviewed draft(s) excluded" in out
+    assert "including 31 unreviewed draft(s)" in out
 
 
 def test_build_index_fails_loudly_and_writes_nothing_for_bad_records(tmp_path, capsys):

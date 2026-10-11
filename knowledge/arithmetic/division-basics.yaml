@@ -1,0 +1,102 @@
+schema_version: 1
+id: arithmetic.division.basics
+title: Division and remainders
+aliases:
+  - division
+  - dividing
+  - sharing equally
+  - division facts
+  - divided by
+keywords:
+  - divide
+  - division
+  - quotient
+  - divisor
+  - dividend
+  - share
+  - groups
+  - remainder
+  - equal groups
+subject: arithmetic
+topic: division
+subtopic: basics
+difficulty: 2
+summary: Division splits an amount into equal groups; it is the inverse of multiplication, and may leave a remainder.
+definition: >-
+  Division splits an amount into equal groups. In 24 / 6 = 4, 24 is the dividend, 6 is the divisor and 4 is
+  the quotient. Division undoes multiplication: if a x b = c then c / b = a. When the divisor does not divide
+  the dividend exactly, the amount left over is the remainder.
+prerequisites:
+  - arithmetic.multiplication.facts
+related:
+  - arithmetic.division.long-division
+  - arithmetic.number-theory.factors
+explanations:
+  - level: intro
+    text: >-
+      Sharing 24 cookies equally among 6 friends gives each friend 4 cookies, so 24 / 6 = 4.
+  - level: standard
+    text: >-
+      Use multiplication facts to divide. To find 56 / 7, ask which number times 7 gives 56. Since 8 x 7 = 56,
+      56 / 7 = 8. With a remainder: 25 / 4 gives 6 with remainder 1, because 6 x 4 = 24 and 25 - 24 = 1.
+worked_examples:
+  - title: Division with a remainder
+    problem: Find 25 / 4, giving the quotient and the remainder.
+    steps:
+      - Which multiple of 4 is closest to 25 without going over? 4 x 5 = 20 and 4 x 6 = 24, while 4 x 7 = 28 is too big.
+      - "Use 6: 4 x 6 = 24."
+      - 25 - 24 = 1, so the remainder is 1.
+      - 25 / 4 = 24 / 4 + 1 / 4 = 6 + 1 / 4
+    answer: quotient 6, remainder 1
+exercises:
+  - id: sixty-three-over-nine
+    prompt: What is 63 / 9?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "7"
+    hints:
+      - Ask which number times 9 gives 63.
+      - 7 x 9 = 63.
+    feedback_correct: Correct. 63 / 9 = 7.
+    feedback_incorrect: Division asks how many 9s fit into 63.
+  - id: forty-divided-by-six-remainder
+    prompt: What is the remainder when 40 is divided by 6?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "4"
+    hints:
+      - Find the largest multiple of 6 that is not more than 40.
+      - 6 x 6 = 36. Subtract it from 40.
+    feedback_correct: Correct. 40 = 6 x 6 + 4.
+    feedback_incorrect: Find 6 x 6 = 36, then subtract 36 from 40.
+  - id: number-divided-by-eight
+    prompt: A number divided by 8 gives 9 with no remainder. What is the number?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "72"
+    hints:
+      - Undo the division by multiplying the quotient by the divisor.
+    feedback_correct: Correct. 9 x 8 = 72.
+    feedback_incorrect: Multiply 9 by 8 to undo the division.
+misconceptions:
+  - description: Believing that the larger number always goes on top, so 3 / 12 is the same as 12 / 3.
+    explanation: Division is not commutative. 12 / 3 = 4, but 3 / 12 is less than 1.
+    correction: 3 / 12 = 1/4. Put the amount being shared on top.
+  - description: Forgetting the remainder when the division is not exact.
+    explanation: 25 / 4 is not 6. It is 6 groups with 1 left over.
+    correction: 25 / 4 = 6 remainder 1, because 4 x 6 + 1 = 25.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 3, 3.OA.A.2 (interpret whole-number quotients)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

@@ -1,0 +1,90 @@
+schema_version: 1
+id: arithmetic.decimals.place-value
+title: Decimals and place value
+aliases:
+  - decimal place value
+  - decimal numbers
+  - tenths and hundredths
+  - comparing decimals
+keywords:
+  - decimal
+  - decimal point
+  - tenths
+  - hundredths
+  - thousandths
+  - place value
+  - compare
+  - money
+subject: arithmetic
+topic: decimals
+subtopic: place-value
+difficulty: 3
+summary: Places to the right of the decimal point are tenths, hundredths and thousandths, each one tenth of the place before.
+definition: >-
+  A decimal point separates the whole-number places from the fractional places. The first place after the point is tenths (1/10), then hundredths (1/100), then thousandths (1/1000). So 0.36 means 3 tenths and 6 hundredths. Decimals compare digit by digit from the left, after writing both numbers with the same number of places.
+prerequisites:
+  - arithmetic.counting.place-value
+  - arithmetic.fractions.equivalent
+related:
+  - arithmetic.decimals.operations
+explanations:
+  - level: intro
+    text: >-
+      Money is decimal. 2.75 means 2 dollars, 7 dimes and 5 pennies.
+  - level: standard
+    text: >-
+      To compare 0.5 and 0.47, write both with two places: 0.50 and 0.47. Five tenths is more than four tenths, so 0.5 is larger.
+worked_examples:
+  - title: Writing a decimal as a sum
+    problem: Write 3.86 as a sum of whole numbers, tenths and hundredths.
+    steps:
+      - 3.86 has 3 ones, 8 tenths and 6 hundredths.
+      - 3.86 = 3 + 0.8 + 0.06
+    answer: 3 + 0.8 + 0.06
+exercises:
+  - id: hundredths-digit-of-four-point-two-six-five
+    prompt: What digit is in the hundredths place of 4.265?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "6"
+    hints:
+      - Count the places after the decimal point. The first is tenths, the second is hundredths.
+    feedback_correct: Correct. The 6 is in the hundredths place.
+    feedback_incorrect: The first digit after the point is tenths, and the second is hundredths.
+  - id: larger-of-zero-point-four-and-zero-point-three-nine
+    prompt: Which is larger, 0.4 or 0.39? Give the larger number.
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "0.4"
+    hints:
+      - Write 0.4 as 0.40 so that both numbers have two places.
+    feedback_correct: Correct. 0.40 is larger than 0.39.
+    feedback_incorrect: Compare the tenths first, then the hundredths.
+  - id: zero-point-zero-seven-as-fraction
+    prompt: Write 0.07 as a fraction in lowest terms.
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 7/100
+    hints:
+      - 0.07 has two decimal places, so its denominator is 100.
+    feedback_correct: Correct. 0.07 = 7/100.
+    feedback_incorrect: Two decimal places mean the denominator is 100.
+misconceptions:
+  - description: Believing that a longer decimal is larger, so 0.125 is greater than 0.4.
+    explanation: Digits are compared by place, not by how many there are.
+    correction: "0.4 is 0.400, which is 400 thousandths. 0.125 is 125 thousandths. So 0.4 is larger."
+sources:
+  - title: Common Core State Standards for Mathematics, grade 5, 5.NBT.A.1 (recognize that a digit represents ten times what it represents in the place to its right)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

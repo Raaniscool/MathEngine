@@ -86,3 +86,50 @@ def test_index_is_not_rebuilt_when_library_is_invalid(tmp_path):
     with pytest.raises(IndexBuildError):
         build_index(load_knowledge(bad_dir), index_path)
     assert index_path.read_bytes() == original  # the good index survives untouched
+
+
+# --- worked-example arithmetic is checked by SymPy -------------------------------------------
+
+def _example_concept(steps: list[str], answer: str):
+    from mathengine.knowledge.models import Concept
+
+    data = record(
+        worked_examples=[{"title": "Sample worked example", "problem": "Find the product of 7 and 8.",
+                          "steps": steps, "answer": answer}]
+    )
+    return Concept.model_validate(data)
+
+
+def test_wrong_worked_step_is_flagged():
+    from mathengine.knowledge.loader import worked_example_problems
+
+    problems = worked_example_problems(_example_concept(["7 x 8 = 54"], "54"))
+    assert problems and "is wrong" in problems[0]
+
+
+def test_wrong_final_answer_is_flagged():
+    from mathengine.knowledge.loader import worked_example_problems
+
+    problems = worked_example_problems(_example_concept(["6 x 9 = 54"], "56"))
+    assert problems and "does not match the steps" in problems[0]
+
+
+def test_correct_chain_passes():
+    from mathengine.knowledge.loader import worked_example_problems
+
+    assert worked_example_problems(_example_concept(["6 x 10 = 60", "60 - 6 = 54"], "54")) == []
+
+
+def test_symbolic_answer_is_skipped_not_rejected():
+    from mathengine.knowledge.loader import worked_example_problems
+
+    # Variables cannot be compared numerically, so the step and the answer are not machine-checked.
+    assert worked_example_problems(_example_concept(["x^3 * x^4 = x^7"], "x^7")) == []
+
+
+def test_every_repository_worked_example_passes_the_checker(knowledge_dir):
+    from mathengine.knowledge.loader import worked_example_problems
+
+    report = load_knowledge(knowledge_dir)
+    failures = [problem for loaded in report.records for problem in worked_example_problems(loaded.concept)]
+    assert failures == []

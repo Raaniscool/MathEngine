@@ -43,13 +43,19 @@ COVERAGE_SHARE = 0.6  # a concept must match at least this share of the query te
 GENERIC_SHARE = 0.5  # with a large library, a term in more than this share of records is "generic"
 MIN_CORPUS_FOR_SHARE = 20  # the share rule is meaningless with only a handful of records
 # Words that name no topic even when they appear in titles ("number line" is still found by "line").
-GENERIC_TERMS = frozenset({"number", "math", "mathematics", "problem", "method", "way", "thing", "value", "example"})
+GENERIC_TERMS = frozenset(
+    {"number", "math", "mathematics", "problem", "method", "way", "thing", "value", "example", "rule"}
+)
+# A term that appears in several fields of the same record is stronger evidence than one field alone.
+# The best field counts in full; each other matching field adds this share of its weight.
+EXTRA_FIELD_SHARE = 0.3
 FUZZY_MIN_LENGTH = 5  # typo matching only for words of this length or longer
 FUZZY_CUTOFF = 0.85
 AMBIGUITY_RATIO = 0.75  # a runner-up within 75% of the best score makes the question ambiguous
 DEFAULT_LIMIT = 5
 MAX_LIMIT = 20
 MAX_OPTIONS = 3  # clarifying questions never offer more than this
+BROAD_MIN_HITS = 3  # a non-exact request that fits this many records is ambiguous
 MAX_SUGGESTIONS = 3
 
 
@@ -155,10 +161,12 @@ class Retriever:
                 query, "matches", "Exact match found.", tuple(hits[:limit]), (), (), tuple(terms), diagnostics
             )
         close = tuple(hit for hit in hits if hit.score >= AMBIGUITY_RATIO * best.score)
-        if len(close) > 1:
-            options = close[:MAX_OPTIONS]
+        # A broad request (no exact title or alias) that fits several records is a question, not a guess.
+        broad = len(hits) >= BROAD_MIN_HITS
+        if len(close) > 1 or broad:
+            options = (close if len(close) > 1 else tuple(hits))[:MAX_OPTIONS]
             names = [f"'{hit.title}'" for hit in options]
-            more = len(close) - len(options)
+            more = max(len(close), len(hits)) - len(options) if broad and len(close) <= 1 else len(close) - len(options)
             listed = ", ".join(names) + (f", or {more} more" if more else "")
             return SearchResult(
                 query,
@@ -239,15 +247,16 @@ class Retriever:
         strong_terms: dict[str, set[str]] = defaultdict(set)  # title/alias/keyword/topic, non-generic
         for info in terms:
             generic = self._is_generic(info.term, info.concept_count, max(1, len(visible)))
-            best_per_concept: dict[str, int] = {}
+            weights_per_concept: dict[str, list[int]] = defaultdict(list)
             for concept_id, field_name in term_hits.get(info.term, []):
-                weight = FIELD_WEIGHTS[field_name]
-                best_per_concept[concept_id] = max(best_per_concept.get(concept_id, 0), weight)
+                weights_per_concept[concept_id].append(FIELD_WEIGHTS[field_name])
                 if field_name != FIELD_BODY and not generic:
                     strong_terms[concept_id].add(info.term)
-            for concept_id, weight in best_per_concept.items():
+            for concept_id, weights in weights_per_concept.items():
+                best = max(weights)
+                extra = sum(weights) - best
                 matched[concept_id].add(info.term)
-                score[concept_id] += weight * info.idf
+                score[concept_id] += (best + EXTRA_FIELD_SHARE * extra) * info.idf
 
         phrase_keys = _exact_keys(query)
         exact_ids: set[str] = set()

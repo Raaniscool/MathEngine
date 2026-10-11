@@ -1,0 +1,113 @@
+schema_version: 1
+id: geometry.measurement.rectangle-perimeter-area
+title: Perimeter and area of a rectangle
+aliases:
+  - area of a rectangle
+  - perimeter of a rectangle
+  - rectangle area
+  - rectangle perimeter
+keywords:
+  - rectangle
+  - area
+  - perimeter
+  - length
+  - width
+  - square units
+  - measurement
+subject: geometry
+topic: measurement
+subtopic: rectangles
+difficulty: 2
+summary: Area counts square units inside a rectangle (length times width); perimeter is the distance around it.
+definition: >-
+  Area measures how many unit squares cover a flat shape. For a rectangle with length l and width w, the area is l x w, measured in square units such as cm squared. Perimeter is the distance around the shape: P = 2(l + w), measured in units of length such as cm.
+prerequisites:
+  - arithmetic.multiplication.facts
+  - arithmetic.addition.whole-numbers
+related:
+  - arithmetic.multiplication.repeated-addition
+formulas:
+  - name: Area of a rectangle
+    expression: l*w
+    result: w*l
+    variables:
+      - symbol: l
+        meaning: length
+        unit: unit length
+      - symbol: w
+        meaning: width
+        unit: unit length
+  - name: Perimeter of a rectangle
+    expression: 2*(l+w)
+    result: l + w + l + w
+    variables:
+      - symbol: l
+        meaning: length
+        unit: unit length
+      - symbol: w
+        meaning: width
+        unit: unit length
+explanations:
+  - level: intro
+    text: >-
+      A rectangle 4 squares wide and 3 squares tall covers 4 times 3 = 12 squares, so its area is 12 square units.
+  - level: standard
+    text: >-
+      Perimeter is the total length of the four sides. A rectangle 7 m by 4 m has sides 7, 4, 7 and 4, so its perimeter is 7 + 4 + 7 + 4 = 22 m, which is 2 times (7 + 4).
+worked_examples:
+  - title: Area and perimeter of one rectangle
+    problem: A rectangle is 7 m long and 4 m wide. Find its area and its perimeter.
+    steps:
+      - Area is length times width. 7 * 4 = 28
+      - Perimeter is two lengths plus two widths. 2 * (7 + 4) = 22
+    answer: Area 28 square metres, perimeter 22 metres
+exercises:
+  - id: area-nine-by-five
+    prompt: A rectangle is 9 cm by 5 cm. What is its area in square centimetres?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "45"
+    hints:
+      - Multiply the length by the width.
+    feedback_correct: Correct. 9 x 5 = 45 square centimetres.
+    feedback_incorrect: Area is length times width.
+  - id: perimeter-nine-by-five
+    prompt: What is the perimeter of a rectangle that is 9 cm by 5 cm?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "28"
+    hints:
+      - Add the four sides, or use 2 times (9 + 5).
+    feedback_correct: Correct. 9 + 5 + 9 + 5 = 28 cm.
+    feedback_incorrect: Perimeter adds all four sides.
+  - id: missing-length
+    prompt: A rectangle has an area of 24 square units and a width of 4 units. What is its length?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "6"
+    hints:
+      - Length = area divided by width.
+    feedback_correct: Correct. 24 / 4 = 6.
+    feedback_incorrect: Divide the area by the width.
+misconceptions:
+  - description: Giving area in units of length, such as 28 cm, instead of square units.
+    explanation: Area counts squares, so its unit is a square unit.
+    correction: The area of 7 cm by 4 cm is 28 cm squared.
+  - description: Counting only two sides when finding the perimeter.
+    explanation: The perimeter goes all the way around, so all four sides are needed.
+    correction: For 7 by 4, the perimeter is 7 + 4 + 7 + 4 = 22.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 3, 3.MD.C.7 (relate area to multiplication and addition)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

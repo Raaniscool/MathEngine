@@ -20,7 +20,9 @@ from pathlib import Path
 import yaml
 from pydantic import ValidationError
 
-from ..math.checker import texts_equivalent, verify_definition
+import re
+
+from ..math.checker import expressions_equal, texts_equivalent, verify_definition
 from ..math.expressions import ExpressionError, parse_expression
 from .models import Concept
 
@@ -130,6 +132,58 @@ def verify_concept_math(concept: Concept) -> list[str]:
     for exercise in concept.exercises:
         for problem in verify_definition(exercise.check.to_spec()):
             problems.append(f"exercise '{exercise.id}': {problem}")
+    problems.extend(worked_example_problems(concept))
+    return problems
+
+
+_TIMES_X = re.compile(r"(?<=[\d)])\s*x\s*(?=[\d(])")
+
+
+def _as_math(text: str) -> str:
+    """Turn school notation into the restricted parser's notation: 7 x 8 -> 7 * 8, 2^3 -> 2**3."""
+    converted = text.replace("\u00d7", "*").replace("\u00f7", "/").replace("\u00b7", "*").replace("^", "**")
+    return _TIMES_X.sub(" * ", converted)
+
+
+def worked_example_problems(concept: Concept) -> list[str]:
+    """Check the arithmetic in worked examples. Returns problems; empty means every checkable step is right.
+
+    Only steps that are pure number chains are checked, such as "6 x 10 = 60" or "60 - 6 = 54".
+    Prose steps and equation-solving steps (which contain variables) are not checked by this
+    function. Their correctness is not machine-verified. The answer must equal the final checked value.
+    """
+    problems: list[str] = []
+    for example in concept.worked_examples:
+        last_value: str | None = None
+        for step in example.steps:
+            text = _as_math(step.strip().rstrip("."))
+            if "=" not in text:
+                continue
+            parts = [part.strip() for part in text.split("=")]
+            try:
+                expressions = [parse_expression(part) for part in parts]
+            except ExpressionError:
+                continue  # prose mixed with maths: not checkable here
+            if any(expression.free_symbols for expression in expressions):
+                continue  # equations with variables are not pure arithmetic
+            for left, right in zip(parts, parts[1:]):
+                if texts_equivalent(left, right) is not True:
+                    problems.append(
+                        f"worked example '{example.title}': step '{step}' is wrong ('{left}' is not '{right}')"
+                    )
+            last_value = parts[-1]
+        if last_value is None:
+            continue
+        try:
+            answer = parse_expression(_as_math(example.answer))
+        except ExpressionError:
+            continue
+        if answer.free_symbols:
+            continue  # symbolic answers ("x^7") are not compared with numeric steps
+        if expressions_equal(answer, parse_expression(last_value)) is not True:
+            problems.append(
+                f"worked example '{example.title}': the answer '{example.answer}' does not match the steps ('{last_value}')"
+            )
     return problems
 
 

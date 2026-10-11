@@ -13,24 +13,26 @@ from mathengine.learning.service import ExerciseService
 
 
 def test_store_reports_counts_and_subjects(store):
-    assert store.draft_count == 5
-    assert store.concept_count == 0  # every seed record is an unreviewed draft, so none are published
+    assert store.draft_count == 31
+    assert store.concept_count == 0  # no record is approved for the default library yet
     counts = dict(store.subject_counts(include_drafts=True))
-    assert counts["arithmetic"] == 2
-    assert counts["algebra"] == 2
+    assert counts["arithmetic"] == 23
+    assert counts["algebra"] == 5
     assert counts["calculus"] == 1
+    assert counts["geometry"] == 2
     assert counts["physics"] == 0
 
 
 def test_store_returns_draft_records_only_when_asked(store):
-    assert store.all_concepts() == []
-    assert len(store.all_concepts(include_drafts=True)) == 5
+    visible = {concept.id for concept in store.all_concepts()}
+    assert "algebra.exponents.laws" not in visible
+    assert len(store.all_concepts(include_drafts=True)) == 31
 
 
 def test_authoritative_index_holds_reviewed_content_only(authoritative_store):
     assert authoritative_store.draft_count == 0
     assert authoritative_store.concept_count == 0
-    assert authoritative_store.meta["excluded_draft_count"] == "5"
+    assert authoritative_store.meta["excluded_draft_count"] == "31"
     assert authoritative_store.meta["draft_content"] == "excluded"
 
 
@@ -67,7 +69,7 @@ def test_missing_index_gives_an_actionable_error(tmp_path):
 def test_index_rebuild_is_deterministic_and_fingerprinted(knowledge_dir, tmp_path):
     first = build_index(load_knowledge(knowledge_dir), tmp_path / "a.sqlite", include_drafts=True)
     second = build_index(load_knowledge(knowledge_dir), tmp_path / "b.sqlite", include_drafts=True)
-    assert first.concept_count == second.concept_count == 5
+    assert first.concept_count == second.concept_count == 31
     first_store = KnowledgeStore.open(first.index_path, expect_drafts=True)
     second_store = KnowledgeStore.open(second.index_path, expect_drafts=True)
     assert first_store.meta["source_fingerprint"] == second_store.meta["source_fingerprint"]

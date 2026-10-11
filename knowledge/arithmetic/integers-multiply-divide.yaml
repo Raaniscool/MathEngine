@@ -1,0 +1,93 @@
+schema_version: 1
+id: arithmetic.integers.multiply-divide
+title: Multiplying and dividing integers
+aliases:
+  - multiplying negative numbers
+  - dividing negative numbers
+  - sign rules
+  - negative times negative
+keywords:
+  - integer
+  - negative
+  - sign
+  - multiply
+  - divide
+  - product
+  - quotient
+  - positive
+subject: arithmetic
+topic: integers
+subtopic: multiply-divide
+difficulty: 5
+summary: Multiply or divide the sizes, then apply the sign rule. Like signs give a positive result and unlike signs give a negative one.
+definition: >-
+  To multiply or divide integers, work with the sizes and then apply the sign rule. Two numbers with the same sign give a positive result; two with different signs give a negative result. So (-3) x (-4) = 12, (-3) x 4 = -12 and (-12) / 4 = -3. A product with an even number of negative factors is positive, and with an odd number it is negative.
+prerequisites:
+  - arithmetic.integers.add-subtract
+  - arithmetic.multiplication.facts
+related:
+  - arithmetic.integers.add-subtract
+explanations:
+  - level: intro
+    text: >-
+      Multiplying by a negative number reverses direction. Three groups of -2 is -6, because each group takes 2 away.
+  - level: standard
+    text: >-
+      Why is (-1) x (-1) equal to 1? Because (-1) x (1 + (-1)) = 0. Using the distributive law gives (-1) x 1 + (-1) x (-1) = 0, so (-1) x (-1) must be +1.
+worked_examples:
+  - title: Several negative factors
+    problem: Find (-4) x (-3) x 2.
+    steps:
+      - Two negative factors make a positive product, so (-4) x (-3) = 12.
+      - (-4) x (-3) x 2 = 24
+    answer: "24"
+exercises:
+  - id: negative-six-times-seven
+    prompt: What is -6 x 7?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "-42"
+    hints:
+      - Multiply the sizes, 6 and 7, then apply the sign rule.
+    feedback_correct: Correct. A negative times a positive is negative.
+    feedback_incorrect: Multiply 6 by 7, then make the answer negative.
+  - id: negative-thirty-six-divided-by-negative-nine
+    prompt: What is (-36) divided by (-9)?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "4"
+    hints:
+      - Two negatives divided give a positive result.
+    feedback_correct: Correct. 36 / 9 = 4, and two negatives make a positive.
+    feedback_incorrect: Divide the sizes 36 and 9, then apply the sign rule.
+  - id: negative-two-cubed
+    prompt: What is (-2) x (-2) x (-2)?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "-8"
+    hints:
+      - Multiply the first two factors. Two negatives make a positive, 4.
+    feedback_correct: Correct. 4 x (-2) = -8, since there are three negative factors.
+    feedback_incorrect: After two negatives you get 4. Then multiply by the third negative.
+misconceptions:
+  - description: Believing that -(-5) is -5.
+    explanation: A minus sign in front of a negative number means the opposite of that number.
+    correction: -(-5) = 5, because the opposite of -5 is 5.
+  - description: Believing that the product of two negatives is negative.
+    explanation: Each negative multiplies the sign by -1, so two of them cancel.
+    correction: (-3) x (-4) = 12, a positive number.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 7, 7.NS.A.2 (multiply and divide rational numbers)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

@@ -39,13 +39,15 @@ def published_client(tmp_path, settings) -> TestClient:
     build_index(report, settings.index_path)
     return TestClient(_app(settings))
 
+EXPONENTS = "algebra.exponents.laws"
+
 
 def test_health_reports_index_state(client):
     body = client.get("/api/health").json()
     assert body["status"] == "ok"
     assert body["knowledge"]["index_built"] is True
-    assert body["knowledge"]["concept_count"] == 0  # no reviewed content yet
-    assert body["knowledge"]["excluded_draft_count"] == 5
+    assert body["knowledge"]["concept_count"] == 0  # every record is an AI draft until a person approves it
+    assert body["knowledge"]["excluded_draft_count"] == 31
     assert body["knowledge"]["developer_preview_built"] is True
 
 
@@ -80,8 +82,8 @@ def test_authoritative_index_file_contains_no_draft_content(settings, client):
     raw = settings.index_path.read_bytes()
     assert POWER_RULE.encode() not in raw
     assert b"Power rule for derivatives" not in raw
-    assert FACTS.encode() not in raw
-    assert b"times tables" not in raw
+    assert EXPONENTS.encode() not in raw  # an unreviewed draft
+    assert b"Exponent laws" not in raw
 
 
 def test_developer_mode_is_a_clear_error_when_the_preview_index_is_missing(settings, built_index):
@@ -194,7 +196,7 @@ def test_reload_picks_up_a_newly_built_index(settings):
 def test_draft_exercises_can_be_checked_only_when_explicitly_requested(client):
     hidden = client.post(
         "/api/exercises/check",
-        json={"concept_id": FACTS, "exercise_id": "seven-times-eight", "answer": "56"},
+        json={"concept_id": POWER_RULE, "exercise_id": "power-of-five", "answer": "3125"},
     )
     assert hidden.status_code == 404
     shown = client.post(

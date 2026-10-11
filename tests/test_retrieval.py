@@ -15,6 +15,7 @@ from mathengine.knowledge.store import KnowledgeStore
 FACTS = "arithmetic.multiplication.facts"
 REPEATED = "arithmetic.multiplication.repeated-addition"
 POWER_RULE = "calculus.derivatives.power-rule"
+POWERS = "arithmetic.exponents.powers"
 EXPONENTS = "algebra.exponents.laws"
 LINEAR = "algebra.equations.linear-one-variable"
 
@@ -55,7 +56,7 @@ def test_exact_titles_and_aliases_are_found_first(retriever, query, expected_id)
         ("Explain derivatives.", POWER_RULE),  # intent word stripped, plural stemmed
         ("Give me calculus problems.", POWER_RULE),  # subject word
         ("derivative of x^n", POWER_RULE),  # symbols ignored, keyword matched
-        ("exponents", EXPONENTS),  # plural
+        ("exponents", POWERS),  # plural; the arithmetic powers record is the exact alias match
         ("product of powers", EXPONENTS),  # phrase words in the formula area
         ("times 6", FACTS),  # number inside a topic phrase
     ],
@@ -63,8 +64,10 @@ def test_exact_titles_and_aliases_are_found_first(retriever, query, expected_id)
 def test_natural_language_requests_find_the_right_concept(retriever, query, expected_id):
     result = retriever.search(query, include_drafts=True)
     assert result.status in ("matches", "ambiguous")
-    assert expected_id in [hit.concept_id for hit in result.hits[:2]]
-    assert _top(result) == expected_id
+    if result.status == "matches":
+        assert _top(result) == expected_id
+    else:  # a clarifying question must still offer the intended reading
+        assert expected_id in [hit.concept_id for hit in result.options]
 
 
 # --- similar concepts and ambiguity ----------------------------------------------------------
@@ -72,9 +75,9 @@ def test_natural_language_requests_find_the_right_concept(retriever, query, expe
 def test_similar_concepts_are_reported_as_ambiguous_not_guessed(retriever):
     result = retriever.search("multiplication", include_drafts=True)
     assert result.status == "ambiguous"
-    # Exponent laws also mentions "product of powers", so it is returned as a lower-ranked hit.
-    # The clarifying question offers only the two closest, equally good readings.
-    assert {hit.concept_id for hit in result.options} == {FACTS, REPEATED}
+    # Several multiplication-related records match. The clarifying question offers at most three of them.
+    assert len(result.options) <= 3
+    assert FACTS in {hit.concept_id for hit in result.options}
     assert {FACTS, REPEATED} <= {hit.concept_id for hit in result.hits}
     assert "Which one did you mean" in result.message
 
@@ -86,7 +89,7 @@ def test_clear_request_is_not_ambiguous_even_with_a_similar_concept(retriever):
 
 # --- honest 'nothing trustworthy here' answers ------------------------------------------------
 
-@pytest.mark.parametrize("query", ["Teach me fractions.", "quadratic formula", "sin cos", "pizza"])
+@pytest.mark.parametrize("query", ["Teach me physics.", "quadratic formula", "sin cos", "pizza"])
 def test_missing_material_is_reported_as_insufficient(retriever, query):
     result = retriever.search(query, include_drafts=True)
     assert result.status == "insufficient"
@@ -102,12 +105,13 @@ def test_requests_without_a_topic_ask_for_clarification(retriever, query):
 
 
 def test_a_single_body_text_word_alone_is_not_enough_to_match(retriever):
-    # "digit" appears only in the body text of the multiplication facts definition.
-    assert retriever.search("digit", include_drafts=True).status == "insufficient"
+    # "result" appears only in body text of the integers record, never in a title, alias, keyword or topic.
+    assert retriever.search("result", include_drafts=True).status == "insufficient"
 
 
 def test_subject_filter_excludes_other_subjects(retriever):
-    assert retriever.search("power", subject="arithmetic", include_drafts=True).status == "insufficient"
+    arithmetic = retriever.search("power", subject="arithmetic", include_drafts=True)
+    assert all(hit.subject == "arithmetic" for hit in arithmetic.hits)
     assert _top(retriever.search("power", subject="calculus", include_drafts=True)) == POWER_RULE
 
 
@@ -138,7 +142,10 @@ def test_preview_store_hides_drafts_unless_asked(store):
 # --- relationships and context ---------------------------------------------------------------
 
 def test_prerequisite_chain_is_ordered_foundations_first(store):
-    assert store.prerequisite_closure(POWER_RULE) == [REPEATED, FACTS, EXPONENTS]
+    closure = store.prerequisite_closure(POWER_RULE)
+    # Every prerequisite comes before the records that depend on it, and the chain reaches the foundations.
+    assert closure.index(REPEATED) < closure.index(FACTS) < closure.index(EXPONENTS)
+    assert "arithmetic.addition.whole-numbers" in closure[: closure.index(REPEATED)]
 
 
 def test_related_concepts_are_listed(store):
@@ -177,3 +184,29 @@ def test_context_never_contains_exercise_answers_or_hints(tmp_path):
     context = ContextBuilder(store).build("arithmetic.testing.sample", include_drafts=True).text
     assert secret_answer not in context
     assert "515151" not in context
+
+# --- regression: the multiplication failure and subject-level queries ------------------------
+
+@pytest.mark.parametrize("query", ["multiplication facts", "Multiplication, FACTS?", "times tables", "multiplcation facts"])
+def test_multiplication_facts_queries_find_the_facts_record_first(retriever, query):
+    result = retriever.search(query, include_drafts=True)
+    assert result.status == "matches"
+    assert _top(result) == FACTS
+
+
+def test_bare_multiplication_asks_which_topic_instead_of_guessing(retriever):
+    result = retriever.search("multiplication", include_drafts=True)
+    assert result.status == "ambiguous"
+    assert FACTS in {hit.concept_id for hit in result.options}
+
+
+@pytest.mark.parametrize("query", ["teach me basic algebra", "algebra"])
+def test_subject_level_algebra_query_asks_which_topic(retriever, query):
+    result = retriever.search(query, include_drafts=True)
+    assert result.status == "ambiguous"
+    assert len(result.options) >= 2
+    assert all(hit.concept_id.startswith("algebra.") for hit in result.options)
+
+
+def test_unrelated_queries_are_never_given_a_match(retriever):
+    assert retriever.search("pizza", include_drafts=True).status == "insufficient"

@@ -1,0 +1,96 @@
+schema_version: 1
+id: arithmetic.number-theory.divisibility
+title: Divisibility rules
+aliases:
+  - divisibility tests
+  - divisibility rule
+  - divisible by
+  - divisibility by 3
+keywords:
+  - divisible
+  - divisibility
+  - digit sum
+  - last digit
+  - remainder
+  - even
+  - odd
+subject: arithmetic
+topic: number-theory
+subtopic: divisibility
+difficulty: 3
+summary: Quick tests use the last digits or the digit sum to decide whether a number divides evenly.
+definition: >-
+  A number is divisible by another when the division leaves no remainder. Quick tests: a number is divisible by
+  2 if its last digit is even; by 3 if its digits add to a multiple of 3; by 4 if its last two digits form a number divisible by 4; by 5 if its last digit is 0 or 5; by 9 if its digits add to a multiple of 9; by 10 if its last digit is 0.
+prerequisites:
+  - arithmetic.division.basics
+  - arithmetic.number-theory.factors
+related:
+  - arithmetic.number-theory.primes
+  - arithmetic.number-theory.multiples
+explanations:
+  - level: intro
+    text: >-
+      Divisibility tests let you decide whether a division is exact without doing the whole division.
+  - level: standard
+    text: >-
+      The digit-sum test for 3 works because 10 leaves a remainder of 1 when divided by 3, so each digit contributes its own value mod 3. Use the test to check a division before doing it.
+worked_examples:
+  - title: Divisibility of 4716 by 3 and by 4
+    problem: Is 4716 divisible by 3? By 4?
+    steps:
+      - 4 + 7 + 1 + 6 = 18
+      - 18 / 3 = 6, so 4716 is divisible by 3.
+      - The last two digits are 16, and 16 / 4 = 4, so 4716 is divisible by 4.
+      - 4716 / 3 = 1572
+    answer: "Yes, divisible by 3 and by 4"
+exercises:
+  - id: remainder-of-1234-over-2
+    prompt: What is the remainder when 1234 is divided by 2?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "0"
+    hints:
+      - Check the last digit of 1234.
+    feedback_correct: Correct. The last digit 4 is even, so 2 divides 1234 exactly.
+    feedback_incorrect: A number whose last digit is even is divisible by 2.
+  - id: smallest-digit-for-fifty-two
+    prompt: What is the smallest digit d that makes the number 52d divisible by 3?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "2"
+    hints:
+      - The digits of 52d add to 7 + d. Find the smallest d that makes 7 + d a multiple of 3.
+    feedback_correct: Correct. 5 + 2 + 2 = 9, which is divisible by 3.
+    feedback_incorrect: Try d = 0, 1, 2 in turn and add the digits each time.
+  - id: how-many-divisible-by-three
+    prompt: How many of the numbers 9, 12, 18 and 25 are divisible by 3?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "3"
+    hints:
+      - Add the digits of each number and check whether the sum is divisible by 3.
+    feedback_correct: Correct. 9, 12 and 18 are divisible by 3. 25 is not.
+    feedback_incorrect: Check each number. 25 has digits that add to 7, which is not a multiple of 3.
+misconceptions:
+  - description: Believing that a number divisible by 2 or by 3 is divisible by 6.
+    explanation: A number must pass both tests. 9 is divisible by 3 but not by 2.
+    correction: 12 passes both tests, so 12 is divisible by 6. 9 is not.
+  - description: Using the last digit to test divisibility by 3.
+    explanation: The last digit does not decide divisibility by 3. The digit sum does.
+    correction: 1 is the last digit of 31, but 31 is not divisible by 3. The digits of 33 add to 6, so 33 is.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 4, 4.OA.B.4 (determine whether a number is divisible by a one-digit number)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

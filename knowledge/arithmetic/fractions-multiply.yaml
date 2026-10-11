@@ -1,0 +1,93 @@
+schema_version: 1
+id: arithmetic.fractions.multiply
+title: Multiplying fractions
+aliases:
+  - multiply fractions
+  - fraction of a fraction
+  - times a fraction
+keywords:
+  - fraction
+  - multiply
+  - multiplication
+  - product
+  - numerator
+  - denominator
+  - cancel
+  - of
+subject: arithmetic
+topic: fractions
+subtopic: multiply
+difficulty: 4
+summary: Multiply the numerators, multiply the denominators, and simplify; cancel common factors first to keep numbers small.
+definition: >-
+  To multiply fractions, multiply the numerators together and the denominators together: a/b x c/d = (a x c)/(b x d). Then simplify. Common factors of a numerator and a denominator can be cancelled before multiplying. Multiplying by a fraction less than 1 gives a smaller amount.
+prerequisites:
+  - arithmetic.fractions.equivalent
+  - arithmetic.multiplication.facts
+related:
+  - arithmetic.fractions.divide
+  - arithmetic.fractions.add-subtract
+explanations:
+  - level: intro
+    text: >-
+      Half of a half is a quarter. The product 1/2 x 1/2 = 1/4 is the amount you get when you take half of one half.
+  - level: standard
+    text: >-
+      For 2/3 x 3/8, multiply the tops and the bottoms to get 6/24, which is 1/4. Cancelling first is quicker: the 3 on the top of the first fraction cancels the 3 on the bottom of the second, leaving 2/8 = 1/4.
+worked_examples:
+  - title: Multiplying with cancelling
+    problem: Find 3/4 x 8/9.
+    steps:
+      - 3 and 9 share a factor of 3. 4 and 8 share a factor of 4. Cancel these first.
+      - 3/4 * 8/9 = (3 * 8) / (4 * 9) = 24/36 = 2/3
+    answer: 2/3
+exercises:
+  - id: two-fifths-times-five-sixths
+    prompt: What is 2/5 x 5/6?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 1/3
+    hints:
+      - Cancel the 5 on the top of the first fraction with the 5 on the bottom of the second.
+    feedback_correct: Correct. 2/5 x 5/6 = 2/6 = 1/3.
+    feedback_incorrect: Multiply the numerators and the denominators, then simplify.
+  - id: three-sevenths-times-fourteen-ninths
+    prompt: What is 3/7 x 14/9?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 2/3
+    hints:
+      - 14 and 7 share a factor of 7. 3 and 9 share a factor of 3.
+    feedback_correct: Correct. The product simplifies to 2/3.
+    feedback_incorrect: Cancel common factors across the fractions, then multiply what is left.
+  - id: half-of-three-quarters
+    prompt: What is one half of three quarters?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 3/8
+    hints:
+      - Of means multiply. Write one half as 1/2.
+    feedback_correct: Correct. 1/2 x 3/4 = 3/8.
+    feedback_incorrect: Multiply 1/2 by 3/4.
+misconceptions:
+  - description: Believing that multiplying a fraction always makes the number bigger.
+    explanation: 1/2 x 1/2 = 1/4, which is smaller than 1/2. Multiplying by a fraction less than 1 takes a part of the amount.
+    correction: Check the size of the answer against the fraction you multiplied by.
+  - description: Adding the denominators when multiplying, for example 1/2 x 1/3 = 1/5.
+    explanation: Multiplication multiplies the denominators too.
+    correction: 1/2 x 1/3 = 1/6.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 5, 5.NF.B.4 (multiply fractions and mixed numbers)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0
