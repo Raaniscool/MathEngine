@@ -19,12 +19,40 @@ are in brackets.
 | Git | any recent | Cloning |
 | Ollama | optional | Local AI helper. Not required; the app works without it |
 
+## 0. Get the code and open the right folder
+
+Every command below must run from the **repository folder**: the folder that contains `README.md`,
+`backend\`, and `desktop\`. Running from your home folder (`C:\Users\<you>`) creates files in the
+wrong place.
+
+```powershell
+# Windows (PowerShell): first time only. Use the branch that has this milestone.
+git clone https://github.com/Raaniscool/MathEngine.git
+cd MathEngine
+git switch arena/ffe845be-mathengine
+```
+
+```powershell
+# Windows: check that you are in the right folder. Both lines must print True.
+cd $HOME\MathEngine        # or wherever you cloned it
+Test-Path README.md
+Test-Path backend\requirements-dev.txt
+```
+
+```bash
+# Linux / macOS
+git clone https://github.com/Raaniscool/MathEngine.git
+cd MathEngine
+git switch arena/ffe845be-mathengine
+```
+
 ## 1. Set up the backend (Python)
 
 Run these from the repository root (the folder that contains `README.md`).
 
 ```powershell
 # Windows (PowerShell)
+py -3.11 --version         # must print Python 3.11.x or newer
 py -3.11 -m venv backend\.venv
 backend\.venv\Scripts\python.exe -m pip install --upgrade pip
 backend\.venv\Scripts\python.exe -m pip install -r backend\requirements-dev.txt
@@ -47,8 +75,8 @@ from the repository root.
 ```powershell
 # Windows (PowerShell)
 cd backend
-.venv\Scripts\python.exe -m mathengine.cli validate
-.venv\Scripts\python.exe -m mathengine.cli build-index
+.\.venv\Scripts\python.exe -m mathengine.cli validate
+.\.venv\Scripts\python.exe -m mathengine.cli build-index
 cd ..
 ```
 
@@ -84,7 +112,7 @@ The backend listens on `127.0.0.1:8000`, so only this computer can reach it.
 ```powershell
 # Windows: run from the backend folder, in its own terminal window
 cd backend
-.venv\Scripts\uvicorn.exe mathengine.api.app:create_app --factory --host 127.0.0.1 --port 8000
+.\.venv\Scripts\uvicorn.exe mathengine.api.app:create_app --factory --host 127.0.0.1 --port 8000
 ```
 
 ```bash
@@ -176,6 +204,13 @@ data/user/        User progress database. Not committed. Never deleted by index 
 
 ## Troubleshooting
 
+- **`The module '.venv' could not be loaded` or `No such file or directory: 'backend\\requirements-dev.txt'`**:
+  you are in the wrong folder. Run `Test-Path README.md` and `Test-Path backend\requirements-dev.txt` (see
+  step 0). Both must print `True`. If `backend\.venv` was created in your home folder by mistake, you can
+  delete that `backend` folder there, but only if it contains just `.venv`.
+- **`No module named 'mathengine'`**: run the command from the `backend` folder, after `cd backend`.
+- **`'npm' is not recognized` or `package.json` not found**: run `npm` from the `desktop` folder, not
+  from `backend`. Install Node.js 20.19+ or 22.12+ first.
 - **"Backend is not reachable"**: start the backend (step 4). Check the port and that no other program uses it.
 - **Draft lesson returns 404**: drafts are not in the authoritative index. Turn on Developer mode to preview them.
 - **"No reviewed lessons are published yet"**: expected until a reviewer approves a record.
