@@ -1,0 +1,82 @@
+schema_version: 1
+id: arithmetic.multiplication.repeated-addition
+title: Multiplication as repeated addition
+aliases:
+  - repeated addition
+  - equal groups
+keywords:
+  - multiply
+  - multiplication
+  - product
+  - groups
+  - repeated addition
+subject: arithmetic
+topic: multiplication
+subtopic: meaning
+difficulty: 1
+summary: Multiplying 3 by 4 means adding four 3s, or three 4s; the total is the product.
+definition: >-
+  Multiplication is a short way to add equal groups. The expression 5 x 3 means five groups of three,
+  which is 3 + 3 + 3 + 3 + 3 = 15. Whole-number multiplication always counts equal groups, so the
+  meaning of a product can be checked by adding.
+prerequisites: []
+related:
+  - arithmetic.multiplication.facts
+explanations:
+  - level: intro
+    text: >-
+      Picture 4 bags with 3 apples in each bag. To count all the apples you can add 3 + 3 + 3 + 3,
+      which is 12. Multiplication writes the same idea as 4 x 3 = 12.
+  - level: standard
+    text: >-
+      A product a x b counts b equal groups of a. Because 3 x 4 and 4 x 3 both count 12 objects,
+      the order of the factors does not change the product (the commutative property).
+  - level: advanced
+    text: >-
+      For whole numbers, a x n is the sum of n copies of a. The laws of multiplication, including the
+      distributive law, are built on this meaning and later extend to fractions and negative numbers.
+formulas:
+  - name: Three equal groups of a
+    expression: 3*a
+    result: a+a+a
+    conditions:
+      - a is a whole number; in general, n x a is the sum of n copies of a
+    variables:
+      - symbol: a
+        meaning: size of each group
+worked_examples:
+  - title: Equal groups
+    problem: Write 5 x 3 as repeated addition and find its value.
+    steps:
+      - 5 x 3 means 5 groups of 3.
+      - Add 3 five times, giving 3 + 3 + 3 + 3 + 3.
+      - 3 + 3 = 6, then 6 + 3 = 9, then 9 + 3 = 12, then 12 + 3 = 15.
+    answer: "15"
+exercises:
+  - id: four-groups-of-two
+    prompt: "Find the value of 4 x 2 by adding equal groups: 2 + 2 + 2 + 2."
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "8"
+    hints:
+      - Count how many 2s you are adding.
+      - There are four 2s. Add them one at a time - 2, 4, 6, 8.
+    feedback_correct: Yes. Four groups of two make 8.
+    feedback_incorrect: Add the four 2s one at a time and check the running total.
+misconceptions:
+  - description: Treating 3 x 4 as 3 + 4 and getting 7.
+    explanation: Multiplication counts equal groups. Addition combines two amounts into one total.
+    correction: 3 x 4 means 3 groups of 4, which is 4 + 4 + 4 = 12.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 3, 3.OA.A.1 (interpreting products of whole numbers)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (seed content)
+  created: 2026-10-11
+  ai_model: Arena coding agent (initial seed content)
+verification:
+  status: ai_draft
+  notes: Seed example written to demonstrate the schema. Needs human review before it is published.
+version: 0.1.0

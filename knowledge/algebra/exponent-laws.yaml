@@ -1,0 +1,120 @@
+schema_version: 1
+id: algebra.exponents.laws
+title: Exponent laws for integer powers
+aliases:
+  - laws of exponents
+  - exponent rules
+  - power laws
+keywords:
+  - exponent
+  - power
+  - index
+  - base
+  - product of powers
+  - quotient of powers
+subject: algebra
+topic: exponents
+subtopic: laws
+difficulty: 3
+summary: A power a^n multiplies a by itself n times; the exponent laws tell how powers combine.
+definition: >-
+  For a base a and a positive whole number n, a^n means a multiplied by itself n times. When the bases
+  match, powers combine by their exponents: a^m x a^n = a^(m+n), and a^m / a^n = a^(m-n) when a is not 0.
+  Note that 2^3 means 2 x 2 x 2 = 8, not 2 x 3.
+prerequisites:
+  - arithmetic.multiplication.facts
+related:
+  - calculus.derivatives.power-rule
+  - arithmetic.multiplication.repeated-addition
+explanations:
+  - level: intro
+    text: >-
+      An exponent counts repeated multiplication. Since x^3 means x x x and x^2 means x x, multiplying
+      x^3 by x^2 gives five copies of x: x^5.
+  - level: standard
+    text: >-
+      Multiply powers with the same base by adding exponents. Divide them by subtracting exponents.
+      Any nonzero base to the power 0 equals 1, because a^3 / a^3 = 1 and also a^(3-3) = a^0.
+  - level: advanced
+    text: >-
+      The laws follow from the definition of a^n for positive integers. Extending them to all integers
+      defines negative and zero exponents consistently. Power of a power, (a^m)^n = a^(mn), is a valid
+      law when the base is positive; for other bases its meaning depends on the branch chosen for roots.
+formulas:
+  - name: Product of powers
+    expression: a^m * a^n
+    result: a^(m+n)
+    conditions:
+      - m and n are integers
+    variables:
+      - symbol: a
+        meaning: base
+      - symbol: m
+        meaning: first exponent
+      - symbol: n
+        meaning: second exponent
+  - name: Quotient of powers
+    expression: a^m / a^n
+    result: a^(m-n)
+    conditions:
+      - a is not 0
+      - m and n are integers
+  - name: Zero exponent
+    expression: a^0
+    result: "1"
+    conditions:
+      - a is not 0
+  - name: Power of a power
+    expression: (a^m)^n
+    conditions:
+      - a is positive, so the law (a^m)^n = a^(mn) holds
+worked_examples:
+  - title: Same base, add exponents
+    problem: Simplify x^3 x x^4.
+    steps:
+      - Both factors have the base x, so add the exponents.
+      - 3 + 4 = 7.
+      - The result is x^7.
+    answer: x^7
+exercises:
+  - id: product-of-powers-numeric
+    prompt: Evaluate 2^3 x 2^2.
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "32"
+    hints:
+      - "Use the product law first: 2^3 x 2^2 = 2^(3+2)."
+      - 2^5 means 2 multiplied by itself five times.
+    feedback_correct: Correct. 2^3 x 2^2 = 2^5 = 32.
+    feedback_incorrect: Add the exponents to get 2^5, then multiply out the five 2s.
+  - id: simplify-powers-of-x
+    prompt: Simplify x^5 x x^2 / x^3. Write your answer as a power of x.
+    answer_type: expression
+    check:
+      method: symbolic_equivalence
+      expected: x^4
+    hints:
+      - "Combine the powers on top first: x^5 x x^2 = x^7."
+      - Then divide by x^3, subtracting the exponents.
+    feedback_correct: Correct. 7 - 3 = 4, so the answer is x^4.
+    feedback_incorrect: Combine the top first (add exponents), then subtract the bottom exponent.
+misconceptions:
+  - description: Multiplying exponents when the bases match, for example x^2 x x^3 = x^6.
+    explanation: Adding exponents comes from counting copies of the base. Multiplying exponents is the rule for a power of a power.
+    correction: x^2 x x^3 = x^(2+3) = x^5.
+  - description: Reading 2^3 as 2 x 3 = 6.
+    explanation: The exponent tells how many times to multiply the base by itself.
+    correction: 2^3 = 2 x 2 x 2 = 8.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 8, 8.EE.A.1 (properties of integer exponents)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (seed content)
+  created: 2026-10-11
+  ai_model: Arena coding agent (initial seed content)
+verification:
+  status: ai_draft
+  notes: Seed example written to demonstrate the schema. Needs human review before it is published.
+version: 0.1.0

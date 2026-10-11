@@ -1,0 +1,109 @@
+schema_version: 1
+id: arithmetic.multiplication.facts
+title: Multiplication facts
+aliases:
+  - times tables
+  - times table
+  - multiplication table
+  - multiplication tables
+keywords:
+  - times
+  - multiplication facts
+  - memorize
+  - table
+  - product
+subject: arithmetic
+topic: multiplication
+subtopic: facts
+difficulty: 2
+summary: Basic products of single-digit numbers, learned as facts and built from known patterns.
+definition: >-
+  A multiplication fact is a product of two single-digit whole numbers, such as 7 x 8 = 56. Students
+  learn these facts so that larger calculations can be broken into known pieces. Strategies include
+  splitting a factor (7 x 8 = 7 x 5 + 7 x 3) and using a nearby known fact (9 x 6 is one group of 6 less than 10 x 6).
+prerequisites:
+  - arithmetic.multiplication.repeated-addition
+related:
+  - algebra.exponents.laws
+explanations:
+  - level: intro
+    text: >-
+      Multiplication facts are the products you use again and again, like 3 x 4 = 12. Knowing them
+      quickly makes division, fractions and algebra much easier.
+  - level: standard
+    text: >-
+      Break an unknown fact into known facts. To find 7 x 8, use 7 x 5 = 35 and 7 x 3 = 21, then add:
+      35 + 21 = 56. Repeated practice turns the strategy into memory.
+  - level: advanced
+    text: >-
+      The distributive law, a x (b + c) = a x b + a x c, justifies every splitting strategy. Multiplication
+      facts are therefore not isolated memorized items but instances of one structure.
+formulas:
+  - name: Distributive splitting
+    expression: a*(b+c)
+    result: a*b + a*c
+    variables:
+      - symbol: a
+        meaning: a factor, for example 7
+      - symbol: b
+        meaning: first part of the other factor
+      - symbol: c
+        meaning: second part of the other factor
+worked_examples:
+  - title: Breaking a fact into easy pieces
+    problem: Find 6 x 9 using a fact you already know.
+    steps:
+      - 6 x 10 = 60 is easy to remember.
+      - 6 x 9 is one group of 6 less than 6 x 10.
+      - 60 - 6 = 54, so 6 x 9 = 54.
+    answer: "54"
+exercises:
+  - id: seven-times-eight
+    prompt: What is 7 x 8?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "56"
+    hints:
+      - Split 8 into 5 + 3, then multiply 7 by each part.
+      - 7 x 5 = 35 and 7 x 3 = 21. Add the two results.
+    feedback_correct: Correct. 7 x 8 = 56.
+    feedback_incorrect: Try splitting one factor into two easier parts.
+  - id: eight-times-nine
+    prompt: What is 8 x 9?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "72"
+    hints:
+      - 8 x 10 is 80, which is easy to find.
+      - 8 x 9 is one group of 8 less than 8 x 10.
+    feedback_correct: Correct. 8 x 9 = 72.
+    feedback_incorrect: Start from 8 x 10 and subtract one group of 8.
+  - id: simplify-with-y
+    prompt: Simplify 3 x 2y x 2. Write the answer using y.
+    answer_type: expression
+    check:
+      method: symbolic_equivalence
+      expected: 12*y
+    hints:
+      - Multiply the number parts first, then keep the variable.
+      - 3 x 2 x 2 = 12.
+    feedback_correct: Correct. The numbers multiply to 12, and the variable y stays.
+    feedback_incorrect: Multiply the numbers together first. The variable y is unchanged.
+misconceptions:
+  - description: Adding instead of multiplying, for example 6 x 4 = 10.
+    explanation: 6 + 4 is an addition. The product 6 x 4 means six groups of four.
+    correction: 6 x 4 = 4 + 4 + 4 + 4 + 4 + 4 = 24.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 3, 3.OA.C.7 (fluently multiply within 100)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (seed content)
+  created: 2026-10-11
+  ai_model: Arena coding agent (initial seed content)
+verification:
+  status: ai_draft
+  notes: Seed example written to demonstrate the schema. Needs human review before it is published.
+version: 0.1.0

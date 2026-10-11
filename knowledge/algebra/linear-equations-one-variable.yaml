@@ -1,0 +1,116 @@
+schema_version: 1
+id: algebra.equations.linear-one-variable
+title: Linear equations in one variable
+aliases:
+  - solve for x
+  - solving linear equations
+  - linear equation
+  - one-step equations
+  - two-step equations
+keywords:
+  - solve
+  - equation
+  - variable
+  - isolate
+  - inverse operations
+  - balance
+subject: algebra
+topic: equations
+subtopic: linear
+difficulty: 3
+summary: A linear equation ax + b = c has one solution; undo operations on both sides until x stands alone.
+definition: >-
+  A linear equation in one variable can be written as a x + b = c, where a is not 0. Its solution is the
+  value of x that makes the equation true. Solve by applying the same operation to both sides, undoing
+  additions and multiplications in reverse order, until x is alone.
+prerequisites:
+  - arithmetic.multiplication.facts
+related: []
+explanations:
+  - level: intro
+    text: >-
+      Think of an equation as a balance scale. Whatever you do to one side, do to the other side so the
+      scale stays level.
+  - level: standard
+    text: >-
+      For 3x + 4 = 19, first subtract 4 from both sides to get 3x = 15, then divide both sides by 3 to get
+      x = 5. Check by substituting back: 3(5) + 4 = 19.
+  - level: advanced
+    text: >-
+      When a is not 0, the equation has exactly one solution, x = (c - b) / a. Substituting the solution
+      back into the original equation is a complete check, which is why this topic suits automatic checking.
+formulas:
+  - name: Solution of a x + b = c
+    expression: (c - b)/a
+    conditions:
+      - a is not 0
+    variables:
+      - symbol: a
+        meaning: coefficient of x
+      - symbol: b
+        meaning: constant added to the term with x
+      - symbol: c
+        meaning: value on the right-hand side
+worked_examples:
+  - title: Two-step equation
+    problem: Solve 2x + 6 = 14.
+    steps:
+      - Subtract 6 from both sides, giving 2x = 8.
+      - Divide both sides by 2, giving x = 4.
+      - "Check: 2(4) + 6 = 14, which is true."
+    answer: x = 4
+exercises:
+  - id: two-step-integer
+    prompt: Solve 3x + 4 = 19 for x.
+    answer_type: equation_solution
+    check:
+      method: solve_equation
+      equation: 3*x + 4 = 19
+      expected: "5"
+    hints:
+      - First undo the +4 by subtracting 4 from both sides.
+      - After subtracting, you have 3x = 15. Now divide both sides by 3.
+    feedback_correct: Correct. Substituting x = 5 gives 3(5) + 4 = 19.
+    feedback_incorrect: Undo the addition first, then the multiplication. Check your answer by substituting it back.
+  - id: divide-then-add
+    prompt: Solve x/4 + 1 = 3 for x.
+    answer_type: equation_solution
+    check:
+      method: solve_equation
+      equation: x/4 + 1 = 3
+      expected: "8"
+    hints:
+      - Subtract 1 from both sides first.
+      - Then multiply both sides by 4 to undo the division.
+    feedback_correct: Correct. 8/4 + 1 = 3.
+    feedback_incorrect: Start by removing the +1, then undo the division by 4.
+  - id: fraction-answer
+    prompt: Solve 5x = 2 for x. Give your answer as a fraction.
+    answer_type: equation_solution
+    check:
+      method: solve_equation
+      equation: 5*x = 2
+      expected: 2/5
+    hints:
+      - Divide both sides by 5.
+    feedback_correct: Correct. x = 2/5.
+    feedback_incorrect: Divide both sides by the coefficient 5. Leave the answer as a fraction.
+misconceptions:
+  - description: Subtracting 4 from only one side, writing 3x = 19 from 3x + 4 = 19.
+    explanation: An equation stays true only when the same operation is applied to both sides.
+    correction: Subtract 4 from both sides, so 3x = 15.
+  - description: Moving +4 to the other side and keeping it as +4.
+    explanation: Moving a term to the other side of the equals sign reverses its operation.
+    correction: 3x + 4 = 19 becomes 3x = 19 - 4 = 15.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 8, 8.EE.C.7 (solving linear equations in one variable)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (seed content)
+  created: 2026-10-11
+  ai_model: Arena coding agent (initial seed content)
+verification:
+  status: ai_draft
+  notes: Seed example written to demonstrate the schema. Needs human review before it is published.
+version: 0.1.0
