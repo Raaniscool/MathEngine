@@ -13,5 +13,5 @@
     "isolatedModules": true,
     "esModuleInterop": true
   },
-  "include": ["electron.vite.config.ts", "src/main/**/*", "src/preload/**/*", "src/shared/**/*", "tests/main/**/*", "tests/shared/**/*", "vitest.config.ts"]
+  "include": ["electron.vite.config.ts", "src/main/**/*", "src/preload/**/*", "src/shared/**/*", "tests/main/**/*", "tests/preload/**/*", "tests/shared/**/*", "vitest.config.ts"]
 }

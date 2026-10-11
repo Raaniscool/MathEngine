@@ -1,13 +1,20 @@
 /**
  * Preload script: the ONLY bridge between the web page and Electron.
  *
- * It exposes a single function, window.mathengine.request. The main process validates every call,
- * so this bridge does not need to be trusted to enforce the allowlist.
+ * It exposes exactly one function, window.mathengine.request, and nothing else. It does not expose
+ * ipcRenderer, Node.js, or the file system. The main process validates every call.
  */
 import { contextBridge, ipcRenderer } from "electron";
+import { IPC_CHANNEL } from "../shared/ipc";
 
-const IPC_CHANNEL = "mathengine:request";
+export interface MathEngineBridgeRequest {
+  method: string;
+  path: string;
+  body?: unknown;
+}
 
-contextBridge.exposeInMainWorld("mathengine", {
-  request: (request: { method: string; path: string; body?: unknown }) => ipcRenderer.invoke(IPC_CHANNEL, request),
-});
+const bridge = {
+  request: (request: MathEngineBridgeRequest) => ipcRenderer.invoke(IPC_CHANNEL, request),
+};
+
+contextBridge.exposeInMainWorld("mathengine", bridge);

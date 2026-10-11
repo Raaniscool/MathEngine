@@ -28,7 +28,9 @@ These come from the project spec. Do not weaken them without an explicit decisio
    not an edit.
 7. **Electron security.** Context isolation on, `nodeIntegration` off, sandbox on. The page reaches the
    backend only through one preload function, and every request is checked against an allowlist in the
-   main process.
+   main process. Each request is also checked for its sender: only the app's own top-level page may send
+   one. Section 9 lists the rules. Tests: `desktop/tests/main`, `desktop/tests/preload`, and
+   `desktop/tests/renderer/isolation.test.ts`.
 8. **Local only.** The app does not depend on any remote AI API. The backend binds to `127.0.0.1`.
 9. **Windows first.** Documentation must include Windows commands.
 10. **Build infrastructure before content.** Do not fill the library with large volumes of unverified content.
@@ -61,19 +63,22 @@ backend/
       progress.py               User-progress database (attempts, hints)
       service.py                Check/hint orchestration; writes progress
     ai/
-      ollama.py                 Optional local Ollama client; failures become readable errors
+      ollama.py                 Optional local Ollama client. Checks the shape of every response; failures become readable errors
       actions.py                Allowlisted actions only (no shell, file, or DB access)
     api/
       app.py                    FastAPI factory; binds to 127.0.0.1 by convention
       routes.py                 HTTP endpoints (section 7)
 desktop/
   electron.vite.config.ts       Build config; injects the CSP into production HTML only
-  src/main/                     Electron main process: window, backend proxy, allowlist
-  src/preload/                  The one bridge: window.mathengine.request
-  src/shared/                   Route allowlist and API types shared by main and renderer
+  src/main/index.ts             Electron main process: window, startup checks, IPC sender check, navigation
+  src/main/security.ts          Security policy as pure functions (no Electron imports, unit-tested)
+  src/main/backendProxy.ts      Forwards validated requests to the loopback backend, with a 10 s timeout
+  src/preload/index.ts          The one bridge: window.mathengine.request
+  src/shared/                   Route allowlist, API types, and the IPC channel name
   src/renderer/                 React UI (App, SearchPanel, ConceptView, StatusBar)
-  tests/                        Vitest: shared, main, renderer, and live-backend integration
-tests/                          pytest suite for the backend
+  scripts/verify-build.mjs      Checks the built preload, main, and renderer files (run by npm run check)
+  tests/                        Vitest: shared, main, preload, renderer, and live-backend integration
+tests/                          pytest suite for the backend (includes test_architecture.py)
 data/generated/                 Rebuildable index. Not committed.
 data/user/                      User progress. Not committed. Never rebuilt.
 ```
@@ -183,7 +188,7 @@ Base: `http://127.0.0.1:8000/api`. Local only.
 | Method | Path | Notes |
 |--------|------|-------|
 | GET | `/health` | Status, version, index state, reviewed concept count, excluded draft count, whether the developer preview index exists |
-| GET | `/ollama/status` | Whether Ollama is reachable and the configured model is installed |
+| GET | `/ollama/status` | Whether Ollama is reachable and the configured model is installed. Always returns 200. A malformed or HTTP-error response from Ollama gives `reachable: false` with the reason |
 | GET | `/subjects` | Subjects with concept counts |
 | GET | `/concepts?q=&subject=&include_drafts=` | Search |
 | GET | `/concepts/{id}?include_drafts=` | Concept detail. Exercise answers and hints are not returned |
@@ -225,10 +230,18 @@ That was a spec violation and has been replaced by the scheme above.
 ## 9. Desktop app
 
 - **Process model:** Electron main process owns the window and the only route to the backend.
-- **Window:** `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`. New windows are denied and
-  in-app navigation is prevented.
+- **Window:** `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`, `webviewTag: false`,
+  `webSecurity: true`. New windows are denied. `will-attach-webview` is blocked. Navigation and redirects
+  away from the app page are prevented.
+- **Sender check:** an IPC request is accepted only from the top-level app page (`parent === null`) at the
+  app's own `file://` URL, or at the dev-server origin in development. Iframes and foreign pages get a
+  refusal and never reach the backend.
+- **Permissions:** every browser permission request is denied, and every permission check returns false.
+- **Startup:** an invalid `MATHENGINE_BACKEND_URL` or a failed Electron start shows an error dialog and quits.
+  The app does not start silently with a bad backend address.
+- **Window re-creation (macOS "activate"):** re-creates the window without registering the IPC handler again.
 - **Bridge:** preload exposes only `window.mathengine.request(request)`, which sends an IPC message on
-  `mathengine:request`.
+  `mathengine:request` (the constant is in `src/shared/ipc.ts`).
 - **Allowlist:** `src/shared/backendRoutes.ts` validates every request in the main process. Only the read,
   check, hint, and evaluate routes listed in section 7 pass. Admin and action routes are refused. Concept IDs
   are checked for path tricks. Query strings are restricted to a small character set. Bodies are capped at
@@ -249,15 +262,36 @@ Last run on the working branch (commands in `README.md`):
 
 | Check | Result |
 |-------|--------|
-| `pytest` (backend and API) | 150 passed, 1 non-failing warning from the Starlette/httpx test client |
-| `validate` and `build-index` | 5 records valid. Authoritative index: 0 reviewed concepts, 5 drafts excluded. Developer preview index: 5 concepts, all drafts |
-| Desktop `typecheck` | passes |
-| Desktop `vitest` | 49 tests pass, including UI tests against the running backend (none skipped) |
-| Desktop `electron-vite build` | passes. Output in `desktop/out/` |
+| `pytest` (backend, API, Ollama failure modes, architecture guard) | 200 passed, 1 non-failing warning from the Starlette/httpx test client |
+| `validate` and `build-index` (run from `backend/`) | 5 records valid. Authoritative index: 0 reviewed concepts, 5 drafts excluded. Developer preview index: 5 concepts, all drafts |
+| Desktop `npm run check` (typecheck, `vitest`, `electron-vite build`, `verify:build`) | exit 0. `vitest`: 85 tests pass, none skipped, including mocked-Electron main and preload tests, the renderer isolation check, and UI tests against the running backend |
+| Desktop `verify:build` | passes. Preload requires only `electron`. Main requires only `electron` and `node:path`/`node:url`. Renderer CSP is present, with `connect-src 'none'` and no inline script |
 
 Tests cover schema rejection of bad records, loader and structure validation, retrieval outcomes, checker
 methods and honesty rules, the API (including draft visibility), progress separation, Ollama failure modes,
-allowlisted actions, the route allowlist, and the React UI against the real backend.
+allowlisted actions, the route allowlist, the Electron window policy and IPC sender check, and the React UI
+against the real backend. The architecture guard fails if `math/`, `learning/`, or `knowledge/` imports `ai/`,
+`api/`, or `httpx`.
+
+**Electron security tests check that they can fail.** The main-process tests load the real `src/main/index.ts`
+with a mocked `electron` module. Twelve deliberate weakenings were each applied and reverted, and every one
+was caught by a failing test: `contextIsolation` off, `sandbox` off, `nodeIntegration` on, the sender
+`parent === null` check removed, the sender check disabled, the permission deny removed (and the
+request and check handlers flipped to allow), the navigation guard removed, the webview block removed, and
+the window-count guard on `activate` removed.
+
+**Ollama parser fixes, with evidence:**
+
+- Before this round, a valid JSON body that was not an object (for example `["a"]`) made `status()` or
+  `generate()` raise an uncaught `AttributeError`, which the API returned as HTTP 500. Now every shape is
+  checked. 20 of the new `test_ollama_failures.py` tests fail against the old `ollama.py` and pass against the new one.
+- End-to-end over real HTTP: a fake Ollama that returned a JSON array from `/api/tags` and HTTP 500 from
+  `/api/generate` was run with the real backend (uvicorn). `/api/ollama/status` returned HTTP 200 with
+  `reachable: false` and the reason. `/api/health`, `/api/subjects`, `/api/concepts`, and `/api/math/evaluate`
+  all worked. The Python `generate()` call raised the typed `OllamaUnavailableError` for the 500.
+
+**Fixed this round:** the README's CLI commands (`python -m mathengine.cli ...`) failed when run from the
+repository root, because `mathengine` is inside `backend/`. They now run from `backend/`.
 
 **Browser check of the production renderer (headless Chromium 131, outside the repo):**
 
@@ -272,14 +306,17 @@ allowlisted actions, the route allowlist, and the React UI against the real back
 
 **Not verified:**
 
-- **The Electron window has not been launched.** The Electron binary is hosted on GitHub, which redirects
-  to `objects.githubusercontent.com`. That host fails the TLS handshake in this sandbox, so the binary cannot
-  be downloaded. The browser check above does not cover the main process, preload script, or window settings
-  (`contextIsolation`, `sandbox`, `will-navigate` handling). Those still need a manual check on Windows: run
-  the backend, then `npm run dev` in `desktop/`.
-- **Ollama has not been tested with a live model.** It is not installed in the build sandbox. Only the
-  unreachable and model-missing states were checked.
+- **The Electron window has not been launched.** The Electron binary is hosted on GitHub's release storage
+  (`objects.githubusercontent.com`). In this build sandbox that host fails the TLS handshake, so the binary cannot
+  be downloaded, and no unofficial binary was used. The mocked-`electron` tests check the code that configures
+  Electron, not Electron itself. Still needed on Windows: run the backend, then `npm run dev` in `desktop/`,
+  and confirm the window loads, the status panel reads "connected", and a check works.
+- **Ollama has not been tested with a live model.** It is not installed in the build sandbox, and `ollama.com`
+  is outside its network allowlist. Its HTTP behavior was tested with `httpx.MockTransport` and one fake server.
+  The `/api/tags` and `/api/generate` shapes were checked against the official Ollama API documentation.
 - **Windows commands** have not been run on Windows. They follow the same steps as the Linux run.
+- **Electron preload and main code are not run in a real renderer.** The browser check above used a test shim in
+  place of `window.mathengine`.
 
 ## 11. Known limitations
 
@@ -298,6 +335,7 @@ allowlisted actions, the route allowlist, and the React UI against the real back
    must record who reviewed it.
 2. Add a small set of reviewed multiplication and physics records, written and checked by a person.
 3. Add a progress view in the desktop app that reads `/progress/summary`.
-4. Test the Electron app manually on Windows and record the result here.
+4. Test the Electron app manually on Windows and record the result here. Also run it once with a real
+   Ollama model, and record the model name, its size, and the response time.
 
 Milestone 2 starts only after milestone 1 is accepted.
