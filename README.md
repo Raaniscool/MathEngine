@@ -163,6 +163,30 @@ To point the desktop app at a different local port, set `MATHENGINE_BACKEND_URL`
 (for example `$env:MATHENGINE_BACKEND_URL="http://127.0.0.1:8001"` in PowerShell). Only loopback
 `http://` addresses are accepted.
 
+### Optional: view the UI in a browser (no Electron)
+
+Use this to look at the screens without the Electron window. The backend must be running.
+
+```powershell
+# Windows (PowerShell), from the desktop folder
+npm run build
+npm run preview:browser
+```
+
+```bash
+# Linux / macOS
+npm run build
+npm run preview:browser
+```
+
+Open http://127.0.0.1:5173/ in your browser. The server listens only on this computer by default.
+To share it on your local network, set `$env:MATHENGINE_PREVIEW_HOST="0.0.0.0"` first (PowerShell) or
+`MATHENGINE_PREVIEW_HOST=0.0.0.0` (Linux/macOS). Stop it with Ctrl+C.
+
+This is a development aid. It uses the same built UI, but a small stand-in for the Electron bridge, and
+it relaxes the Content-Security-Policy so the page can reach its own `/api`. The packaged app keeps the
+strict policy. See the header of `desktop/scripts/browser-preview.mjs`.
+
 ### Optional: local AI with Ollama
 
 Ollama is optional. The app works without it, and the status panel reports when it is not running.

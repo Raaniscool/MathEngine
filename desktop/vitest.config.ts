@@ -6,6 +6,6 @@ export default defineConfig({
   test: {
     // Node by default; UI tests opt into jsdom with a "@vitest-environment jsdom" comment.
     environment: "node",
-    include: ["tests/**/*.test.ts", "tests/**/*.test.tsx"],
+    include: ["tests/**/*.test.ts", "tests/**/*.test.tsx", "tests/**/*.test.mjs"],
   },
 });
