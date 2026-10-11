@@ -106,6 +106,18 @@ def create_app(settings: Settings | None = None, ollama_transport=None) -> FastA
     from .routes import router  # imported here to keep module import light
 
     app.include_router(router)
+
+    @app.get("/", include_in_schema=False)
+    def _root() -> dict[str, str]:
+        # This server is the API only. Point a person who opens it in a browser to the right place.
+        return {
+            "app": "MathEngine backend",
+            "version": __version__,
+            "api_docs": "/docs",
+            "health": "/api/health",
+            "ui": "The UI is a separate page. See README: 'View the UI in a browser' (http://127.0.0.1:5173/).",
+        }
+
     return app
 
 

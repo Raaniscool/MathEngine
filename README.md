@@ -235,6 +235,9 @@ data/user/        User progress database. Not committed. Never deleted by index 
 - **`No module named 'mathengine'`**: run the command from the `backend` folder, after `cd backend`.
 - **`'npm' is not recognized` or `package.json` not found**: run `npm` from the `desktop` folder, not
   from `backend`. Install Node.js 20.19+ or 22.12+ first.
+- **Opening http://127.0.0.1:8000 shows `{"detail":"Not Found"}`** (older builds) or a short JSON note
+  (current builds): that address is the API, not the website. Open the UI at http://127.0.0.1:5173/
+  after `npm run preview:browser`, or use the Electron app. API docs are at http://127.0.0.1:8000/docs.
 - **"Backend is not reachable"**: start the backend (step 4). Check the port and that no other program uses it.
 - **Draft lesson returns 404**: drafts are not in the authoritative index. Turn on Developer mode to preview them.
 - **"No reviewed lessons are published yet"**: expected until a reviewer approves a record.

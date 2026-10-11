@@ -203,3 +203,11 @@ def test_draft_exercises_can_be_checked_only_when_explicitly_requested(client):
     )
     assert shown.status_code == 200
     assert shown.json()["verdict"] == "correct"
+
+
+def test_root_explains_that_this_is_the_api_only(settings):
+    body = TestClient(_app(settings)).get("/").json()
+    assert body["app"] == "MathEngine backend"
+    assert body["api_docs"] == "/docs"
+    assert body["health"] == "/api/health"
+    assert "5173" in body["ui"]
