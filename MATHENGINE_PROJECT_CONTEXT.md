@@ -128,9 +128,16 @@ Every model uses `extra="forbid"`, so a misspelled field is an error, not a sile
 ### 5.2 Trust levels
 
 - `ai_draft`: written or proposed by AI and not reviewed by a person. Never written to the authoritative
-  index. It appears only in the developer preview index, on explicit request.
-- `reviewed`: checked by a human. Exercise answers are still machine-checked on every build.
-- `verified`: reviewed, and every exercise has a machine-checkable answer (no `none` checks).
+  index. It appears only in the developer preview index, on explicit request. **All 31 current records are
+  `ai_draft`.** The authoritative index is therefore empty, and the default app shows no lessons.
+- `reviewed`: checked by a human. Exercise answers are still machine-checked on every build. Needs
+  `reviewed_by` and `reviewed_on`. No record has this status yet.
+- `verified`: reviewed, and every exercise has a machine-checkable answer (no `none` checks). Same fields.
+- `machine_checked`: **in the schema, not approved.** Every exercise answer and formula identity passed the
+  deterministic SymPy checker, and the record carries `checked_by` and `checked_on`. Its text was not reviewed
+  by a person. The label must say so. It would be included in the authoritative index. **Pending decision:**
+  the project owner must accept or reject this tier (section 12). If rejected, remove the tier from
+  `models.py` and set those records back to `ai_draft`.
 
 ### 5.3 Validation (`knowledge/loader.py`)
 
@@ -141,25 +148,45 @@ Four layers. Any error stops an index build, so a bad record can never replace a
 3. Structure: file location matches subject, IDs unique, references resolve, no prerequisite cycles
 4. Mathematics: formulas parse, stated identities hold, every stored answer agrees with its check
 
-### 5.4 Seed content
+### 5.4 Library content
 
-Five records, all `ai_draft`, all valid. Because none is reviewed, the authoritative index is empty and the
-student-facing library has no lessons yet:
+31 records, all `ai_draft`, all valid (`python -m mathengine.cli validate`):
 
-- `arithmetic.multiplication.facts`: multiplication facts (difficulty 2), with exercises
-  `seven-times-eight`, `eight-times-nine`, and `simplify-with-y`
-- `arithmetic.multiplication.repeated-addition`: prerequisite for the facts
-- `algebra.exponents.laws`
-- `algebra.equations.linear-one-variable`
-- `calculus.derivatives.power-rule`: the advanced concept
+| Subject | Records | Status |
+|---------|--------:|--------|
+| arithmetic | 23 | all `ai_draft` |
+| algebra | 5 | all `ai_draft` |
+| geometry | 2 | all `ai_draft` |
+| calculus | 1 | `ai_draft` |
+| **Total** | **31** | **0 reviewed, 31 `ai_draft`** |
 
-These are schema examples. They are not reviewed teaching content.
+Before this round there were 5 seed drafts (2 arithmetic, 2 algebra, 1 calculus). 26 records were added. Two
+seed records (`multiplication-facts`, `multiplication-repeated-addition`) were rewritten.
 
-## 6. Index and retrieval
+Arithmetic covers counting and place value, addition, subtraction, multiplication facts and repeated addition,
+division basics, long division, factors, multiples, primes, divisibility, equivalent fractions, fraction
+add/subtract/multiply/divide, decimal place value and operations, percentages, ratios and rates, integers
+(add/subtract and multiply/divide), order of operations, and powers. Algebra covers exponent laws,
+linear equations in one variable, evaluating expressions, like terms, and the distributive property. Geometry
+covers rectangle perimeter and area, and the triangle angle sum. Calculus has the power rule.
+
+**Machine checks on each build.** Exercise answers, formula identities, and worked-example arithmetic are checked
+with SymPy. Worked-example steps are checked only when they are pure number chains (for example `6 x 10 = 60`).
+Prose steps, steps with variables, and symbolic answers are **not** machine-checked, and the docs must not
+claim that they are.
+
+**Not yet written:** two-step equations, inequalities, the rest of pre-algebra, most of geometry and
+measurement, and other subjects. Each new record is written in small batches. It is re-read, run through
+`validate`, and only then counted as done.
+
+## 6. Index, retrieval, and the assistant
+
+### 6.1 Indexes
 
 `knowledge/index.py` writes two files, each to a temporary file that replaces the old one only after success:
 
-- `data/generated/knowledge.sqlite`: the **authoritative** index. Reviewed and verified records only.
+- `data/generated/knowledge.sqlite`: the **authoritative** index. Reviewed and verified records only. Empty
+  until a person approves a record (or until the `machine_checked` decision in section 12 is made).
 - `data/generated/knowledge-dev.sqlite`: the **developer preview** index. All records, drafts included. Opened
   only when a request asks for drafts.
 
@@ -170,16 +197,104 @@ to a draft (section 8). Indexes hold concepts, term rows, and metadata. They nev
 runs, which matters on Windows, where a file cannot be replaced while open. After a rebuild, restart the
 backend or call `POST /api/knowledge/reload`.
 
-`knowledge/retrieval.py` finds concepts for a free-text request. Terms are looked up in the index and scored
-by where they matched: title, then alias, keyword, topic, and body. It returns one of four outcomes and never
-guesses silently. Search results contain no information about drafts:
+### 6.2 Search (`knowledge/text.py`, `knowledge/retrieval.py`)
 
-- `matches`: one or more concepts clearly match
-- `ambiguous`: several match about equally well. The UI asks the user to choose.
-- `insufficient`: nothing trustworthy matches. The response says so.
-- `needs_clarification`: the request has no topic words (for example, "I don't understand")
+**Root cause of the earlier failure.** Searches for "multiplication facts" and "times tables" failed for several
+reasons, and each was fixed at its source:
 
-Search is keyword and structure based. There is no embedding or semantic search yet.
+1. Only five seed records existed, all drafts, so the default index was empty and every search said nothing
+   matched. That is a trust-policy outcome, not a search bug, and it is still the case (section 12).
+2. "times" was stemmed to "time" before the synonym lookup, so it never reached "multiply".
+3. Body-text mentions counted toward document frequency, so ordinary words such as "multiply" looked generic.
+4. A title-only match and a topic-only match scored the same, so the best record could lose a tie to an
+   alphabetically earlier one.
+5. Typos such as "multiplcation" were not matched, because fuzzy matching ran against stemmed vocabulary.
+
+**How it works now.** Nothing is special-cased for any topic.
+
+- **Normalization** (applied to the record text at build time and to the query at search time, identically):
+  lowercase, punctuation removed, accents folded, a light stemmer, and a synonym table (for example "times" →
+  "multiply", "algebraic" → "algebra"). The raw word is checked against the synonym table before stemming.
+  Single-character tokens, common stopwords, and request words (for example "teach", "explain", "practice", "help", "show") are dropped from the search terms. The request word still sets the intent (section 6.2 below).
+- **Typo tolerance** matches the typed word against a lexicon of words the library uses.
+- **Field weights.** A term can match the title (highest), an alias, a keyword, the topic or subject hierarchy,
+  or the body text. Each record scores the best matching field plus 30% of the other matching fields.
+- **IDF weighting.** A term that appears in many records counts for less. Document frequency counts only the
+  title, aliases, keywords, and topic, not body text. Generic words (for example "number", "rule", "problem") are
+  never used to pick a record.
+- **Outcomes.** A query returns one of:
+  - `matches`: one record clearly leads. An exact title or alias match always comes first.
+  - `ambiguous`: several records are close, or the request is broad (no exact title or alias, and it fits
+    three or more records). The response is a short question with up to three options, for example
+    "teach me basic algebra" or "multiplication".
+  - `insufficient`: nothing relevant. The response says so and offers up to three nearby topics. It never
+    implies that hidden drafts exist.
+  - `needs_clarification`: no topic words.
+- **Subject filter** narrows the search to one subject.
+
+**Intent** (`knowledge/query.py`, rules only, no model). Order: solve > practice > lesson > explain > search,
+plus `clarify` when there is no topic:
+
+| Input | Intent | What happens |
+|-------|--------|--------------|
+| `7 x 8`, `7 times 8`, `what is 2x + 3 = 7` | solve | SymPy checks the expression. Qwen is not used |
+| `solve for x` | clarify | Asks for the equation |
+| `I don't understand`, `help` | clarify | Asks what to explain |
+| `practice fractions` | practice | Looks up the topic |
+| `teach me long division` | lesson | Looks up the topic and returns the lesson text |
+| `explain long division` | explain | Looks up the topic, keeping any expression |
+| `multiplication facts` | search | Looks up the topic |
+
+Equation solving is not implemented in the assistant. An equation gets a clear "not supported yet" answer.
+
+**Developer mode** shows the retrieved record IDs and the intent reason. Ordinary users do not see them.
+
+### 6.3 Assistant flow (`ai/assistant.py`, route `POST /api/assistant/ask`)
+
+user input → intent (rules) → retrieval (index) → deterministic check (SymPy) → Qwen explains retrieved text only →
+response with next steps.
+
+1. **Intent** from section 6.2.
+2. **Calculations** (`solve`) are checked with SymPy and returned as `status: verified`. Qwen is not called.
+3. **Clarifications and not-found** return immediately. Qwen is not called.
+4. **Matches**: at most two records are used, and each is cut to a share of 2,400 characters in total. The
+   excerpt comes from `ContextBuilder`, which excludes drafts (unless developer mode), hints, and exercise
+   answers. The bounded excerpt is the only library content Qwen sees. The whole library is never sent.
+5. **Qwen** is called once with a fixed system prompt. The prompt says to use only the library text, to add no
+   facts, numbers, or calculations, and to keep the answer short. The call uses `stream: false`.
+6. **Guard.** Every simple two-number arithmetic claim in Qwen's reply (for example `7 x 8 = 56`) is re-checked
+   with SymPy. If any claim is wrong, or cannot be decided, Qwen's text is withheld. The library text is shown
+   instead, with the reason. The guard checks only those simple claims. It does not check every factual statement
+   the model makes. That is a stated limitation.
+7. **Response** contains the status, the verified library text with sources, next steps (prerequisites and
+   related records, up to four), and a `qwen` block with its status.
+
+**Qwen is never the source of mathematical truth.** It does not decide which records exist, does not decide
+whether an answer is right, and cannot override a SymPy result or a verification status.
+
+**Every model failure is visible and does not stop the answer.** `qwen.status` is one of:
+
+| Status | Meaning | What the learner sees |
+|--------|---------|-----------------------|
+| `ok` | The model replied and the guard passed | The explanation, labelled as re-checked, plus the library text |
+| `blocked` | The reply had a wrong or undecidable arithmetic claim | "The model's explanation was not shown", plus the library text |
+| `unavailable` | Ollama not reachable, timeout, model not installed (with the `ollama pull` command), HTTP error, malformed JSON, or empty reply | The reason, plus the library text |
+| `not_used` | The model was not needed (calculation, clarification, not found) | A short reason |
+
+The app works fully without Qwen. The library answer, search, lessons, and calculations do not depend on it.
+
+### 6.4 Qwen configuration (no code change needed)
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `MATHENGINE_OLLAMA_URL` | `http://127.0.0.1:11434` | Ollama server. Use the address where your Ollama runs |
+| `MATHENGINE_OLLAMA_MODEL` | `qwen2.5:1.5b` | Model tag. **A starting point only.** Check `ollama list` and set the name you actually have |
+| `MATHENGINE_OLLAMA_TIMEOUT` | `120` | Seconds to wait for one model reply. Invalid values fall back to 120 |
+
+`GET /api/ollama/status` reports whether Ollama is reachable, whether the configured model is installed, and
+the installed model names. If the configured model is missing but a Qwen model is installed, the message names
+it. The backend never switches models by itself. Real-model tests are in `tests/test_real_ollama.py` and are
+skipped unless `MATHENGINE_REAL_OLLAMA=1` is set. They use whatever model is configured.
 
 ## 7. API
 
@@ -197,11 +312,17 @@ Base: `http://127.0.0.1:8000/api`. Local only.
 | POST | `/math/evaluate` | Exact evaluation of one expression. Parsed, never executed |
 | GET | `/progress/summary` | Attempt summary from the progress database |
 | GET | `/actions`, POST `/actions/{name}` | Allowlisted actions for the assistant. Not exposed to the desktop app |
+| POST | `/assistant/ask` | Body: `question` (max 500 characters), `include_drafts`, `include_diagnostics`. Returns the answer, the verified library text, the Qwen status, and next steps. See section 6.3 |
 | POST | `/knowledge/reload` | Reopen the index after a rebuild. Not exposed to the desktop app |
 
-`include_drafts` defaults to `false`. Without it, reads and checks use only the authoritative index, so a draft
-concept returns 404. With `include_drafts=true`, they use the developer preview index. If that index has not
-been built, the response is 503 with the rebuild instruction. Search results never mention drafts.
+`include_drafts` defaults to `false`. Without it, reads, checks, and the assistant use only the authoritative
+index, so a draft concept returns 404. With `include_drafts=true`, they use the developer preview index, and
+the assistant labels its answer as possibly using drafts. If that index has not been built, the response is
+503 with the rebuild instruction. Search results never mention drafts.
+
+`/assistant/ask` is the only route that calls Ollama. Its request body is validated strictly, and unknown fields
+are rejected with 422. The route waits up to 150 seconds on the desktop side, which is longer than the backend's
+model timeout.
 
 ## 8. Draft handling (decided)
 
@@ -245,7 +366,8 @@ That was a spec violation and has been replaced by the scheme above.
 - **Allowlist:** `src/shared/backendRoutes.ts` validates every request in the main process. Only the read,
   check, hint, and evaluate routes listed in section 7 pass. Admin and action routes are refused. Concept IDs
   are checked for path tricks. Query strings are restricted to a small character set. Bodies are capped at
-  16 KB. Requests time out after 10 s.
+  16 KB. Requests time out after 10 s, except the assistant route, which times out after 150 s because it waits
+  on a local model. The browser preview uses the same limits.
 - **Backend URL:** `MATHENGINE_BACKEND_URL`, default `http://127.0.0.1:8000`. Must be an `http://` loopback
   address.
 - **CSP:** the production build injects a Content-Security-Policy meta tag: `default-src 'self'`,
@@ -254,7 +376,13 @@ That was a spec violation and has been replaced by the scheme above.
 - **Verdict display:** a verified result shows "Checked by the math engine." An unverifiable result shows
   "No verdict given" and says the answer is not marked right or wrong.
 - **Developer mode:** a toggle sends `include_drafts=true`. Draft content is labelled "AI draft" with a banner.
-- **Content:** the UI renders whatever the backend returns. It contains no lesson text.
+- **Connection status:** the status bar shows the backend (connected, version, reviewed concept count) and
+  Ollama (running and model name, or the reason it is not ready).
+- **Ask panel:** one question box. It shows a loading state with a time warning, a visible error for backend
+  failures, a short clarifying question with clickable options, nearby topics when nothing matches, a verified
+  calculation, the model's explanation (or why it was withheld or unavailable), the library text with sources,
+  and next steps. Each answer's status is stated plainly.
+- **Content:** the UI renders whatever the backend returns. It contains no lesson text and no math.
 
 ## 10. Verification status
 
@@ -262,10 +390,18 @@ Last run on the working branch (commands in `README.md`):
 
 | Check | Result |
 |-------|--------|
-| `pytest` (backend, API, Ollama failure modes, architecture guard) | 200 passed, 1 non-failing warning from the Starlette/httpx test client |
-| `validate` and `build-index` (run from `backend/`) | 5 records valid. Authoritative index: 0 reviewed concepts, 5 drafts excluded. Developer preview index: 5 concepts, all drafts |
-| Desktop `npm run check` (typecheck, `vitest`, `electron-vite build`, `verify:build`) | exit 0. `vitest`: 85 tests pass, none skipped, including mocked-Electron main and preload tests, the renderer isolation check, and UI tests against the running backend |
-| Desktop `verify:build` | passes. Preload requires only `electron`. Main requires only `electron` and `node:path`/`node:url`. Renderer CSP is present, with `connect-src 'none'` and no inline script |
+| `pytest -q` from the repository root | 249 passed, 1 skipped (real-model tests, skipped unless `MATHENGINE_REAL_OLLAMA=1`) |
+| `validate` (run from `backend/`) | 31 records valid |
+| `build-index` (run from `backend/`) | Authoritative: 0 reviewed concepts, 31 drafts excluded. Developer preview: 31 concepts, all drafts |
+| Desktop `npm run check` (typecheck, `vitest`, build, `verify:build`) | 111 tests pass, build verified |
+| Live check, running backend | Started the backend against a local stand-in for Ollama (a logging server, not a real model). The app sent exactly one `/api/generate` request with `stream: false`, the configured model, and a 1,478-character bounded prompt. The guard accepted the correct reply. With the stand-in stopped, the same question returned `qwen.status: unavailable` with the reason, and the library text was still returned |
+
+Search results checked against the real library (developer mode, drafts on): "multiplication facts", "times
+tables", "multiplcation facts", and "Multiplication, FACTS?" all return the multiplication-facts record first.
+"multiplication" and "times 6" return a clarifying question that includes it. "fractions" returns a
+clarifying question. "teach me basic algebra" returns a clarifying question across the algebra records, not one
+arbitrary record. "power rule" and "derivatives" return the draft power-rule record only in developer mode.
+"pizza" returns no match with nearby topics.
 
 Tests cover schema rejection of bad records, loader and structure validation, retrieval outcomes, checker
 methods and honesty rules, the API (including draft visibility), progress separation, Ollama failure modes,
@@ -311,31 +447,55 @@ repository root, because `mathengine` is inside `backend/`. They now run from `b
   be downloaded, and no unofficial binary was used. The mocked-`electron` tests check the code that configures
   Electron, not Electron itself. Still needed on Windows: run the backend, then `npm run dev` in `desktop/`,
   and confirm the window loads, the status panel reads "connected", and a check works.
-- **Ollama has not been tested with a live model.** It is not installed in the build sandbox, and `ollama.com`
-  is outside its network allowlist. Its HTTP behavior was tested with `httpx.MockTransport` and one fake server.
-  The `/api/tags` and `/api/generate` shapes were checked against the official Ollama API documentation.
+- **No live Qwen model was tested.** Ollama is not installed in the build sandbox, and `ollama.com` is outside
+  its network allowlist. The assistant was tested with `httpx.MockTransport`, with a logging stand-in server, and
+  against the official Ollama API shapes. The real-model tests in `tests/test_real_ollama.py` are written but
+  have not been run against a real model. Run them on your machine with `MATHENGINE_REAL_OLLAMA=1`.
 - **Windows commands** have not been run on Windows. They follow the same steps as the Linux run.
 - **Electron preload and main code are not run in a real renderer.** The browser check above used a test shim in
   place of `window.mathengine`.
 
 ## 11. Known limitations
 
-- Search is keyword and structure based. Students must use words the index knows (aliases, keywords).
+- **The default app shows no lessons.** Every record is an AI draft, so the authoritative index is empty, and a
+  normal user gets "no reviewed material" for every question. This is the trust policy working as designed. It
+  is the main decision still open (section 12).
+- Search is keyword and structure based. There is no embedding or semantic search. Synonyms and typo tolerance
+  are limited to the words in the library and in the synonym table.
+- The assistant does not solve equations. It checks simple calculations with SymPy.
+- The guard checks only simple two-number arithmetic claims in Qwen's reply. It does not verify other factual
+  claims, so the explanation still depends on the model staying close to the excerpt. The excerpt is the
+  verified source, and the library text is always shown next to the explanation.
+- Worked-example steps are checked only when they are pure number chains. Prose, variables, and symbolic answers
+  are not machine-checked.
 - Progress is recorded per attempt. There is no summary UI beyond the API.
-- The Electron app is a shell: search, read, check, and hint. There is no lesson-planning or
-  assistant UI yet.
-- The library has only five draft seed records, and no reviewed content.
+- The Electron app is a shell: search, read, check, hint, and ask. There is no lesson-planning UI yet.
+- The library has 31 AI-draft records. Coverage is partial: it stops before two-step equations, inequalities,
+  most of geometry and measurement, and other subjects.
 
 ## 12. Next milestone (proposed)
 
+**Decision needed from the project owner before the default app can show any lesson:**
+
+1. **Approve the `machine_checked` tier.** Records that pass every SymPy check would be included in the
+   authoritative index. The UI would label them "checked by the math engine, text not reviewed by a person."
+   This changes sections 5.2 and 6.1. If you reject it, the tier is removed from `models.py`, and records stay
+   `ai_draft` until a person reviews them.
+2. **Or review records by hand.** A reviewer changes `ai_draft` to `reviewed` (with `reviewed_by` and
+   `reviewed_on`). This is slower but is the stricter option.
+3. **Or show drafts in the default app with a clear label.** This would break the "drafts stay separate" rule.
+   It is not recommended.
+
 **Milestone 2: content pipeline and review.**
 
-1. Add a review workflow: a CLI command or PR template that promotes a record from `ai_draft` to
-   `reviewed`, and checks that every exercise has a machine check. Promotion must be a human decision and
-   must record who reviewed it.
-2. Add a small set of reviewed multiplication and physics records, written and checked by a person.
-3. Add a progress view in the desktop app that reads `/progress/summary`.
-4. Test the Electron app manually on Windows and record the result here. Also run it once with a real
-   Ollama model, and record the model name, its size, and the response time.
+1. Add a review workflow: a CLI command or PR template that promotes a record from `ai_draft` to `reviewed`, and
+   checks that every exercise has a machine check. Promotion must be a human decision and must record who
+   reviewed it.
+2. Finish the library in the priority order: two-step equations, inequalities, the rest of pre-algebra, geometry
+   and measurement, then other subjects. Every record is re-read and run through `validate` before it counts.
+3. Run the real-model tests on the owner's machine (`MATHENGINE_REAL_OLLAMA=1 pytest -q -m real_ollama`), and
+   record the model name, its size, and the response time.
+4. Test the Electron app manually on Windows and record the result here.
+5. Add a progress view in the desktop app that reads `/progress/summary`.
 
 Milestone 2 starts only after milestone 1 is accepted.

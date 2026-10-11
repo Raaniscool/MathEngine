@@ -103,7 +103,8 @@ backend\.venv\Scripts\python.exe -m pytest
 backend/.venv/bin/python -m pytest
 ```
 
-Expected: `200 passed`. Desktop tests are in step 5.
+Expected: `249 passed, 1 skipped`. The skipped test is the real-model check, which needs Ollama (see
+[Optional: local AI with Ollama](#optional-local-ai-with-ollama)). Desktop tests are in step 5.
 
 ## 4. Start the backend
 
@@ -189,15 +190,49 @@ strict policy. See the header of `desktop/scripts/browser-preview.mjs`.
 
 ### Optional: local AI with Ollama
 
-Ollama is optional. The app works without it, and the status panel reports when it is not running.
-To try it:
+Ollama is optional. The app works without it. The status bar shows whether Ollama is running and whether the
+configured model is installed. Qwen only explains library text. It never decides math. Every calculation is
+checked by SymPy, and a model reply that contains a wrong arithmetic claim is withheld.
+
+**Windows (PowerShell):**
 
 ```powershell
+# 1. Install Ollama from https://ollama.com, then check what you already have
+ollama list
+
+# 2. Pull a model if you do not have one. Use the exact name that `ollama list` shows.
 ollama pull qwen2.5:1.5b
+
+# 3. Optional: point MathEngine at a different server or model for this terminal only
+$env:MATHENGINE_OLLAMA_URL="http://127.0.0.1:11434"
+$env:MATHENGINE_OLLAMA_MODEL="qwen2.5:1.5b"   # set this to the name from `ollama list`
+$env:MATHENGINE_OLLAMA_TIMEOUT="120"          # seconds to wait for one reply
+
+# 4. Start the backend in this same window (from the backend folder)
+backend\.venv\Scripts\python.exe -m uvicorn mathengine.api.app:create_app --factory --host 127.0.0.1 --port 8000
 ```
 
-The model name is set by `MATHENGINE_OLLAMA_MODEL`. The default is `qwen2.5:1.5b`, which is a starting
-point, not a chosen model. Ollama output is never shown as a verified answer.
+**Linux / macOS:** the same variables, with `export NAME=value` in place of `$env:NAME="value"`.
+
+| Setting | Default | Notes |
+|---------|---------|-------|
+| `MATHENGINE_OLLAMA_URL` | `http://127.0.0.1:11434` | Where Ollama listens |
+| `MATHENGINE_OLLAMA_MODEL` | `qwen2.5:1.5b` | A starting point, not a chosen model. Use the name `ollama list` shows |
+| `MATHENGINE_OLLAMA_TIMEOUT` | `120` | Seconds per reply. Invalid values fall back to 120 |
+
+The default model name is not assumed to be installed on your machine. If the configured model is missing,
+the status panel says so and suggests any installed Qwen model. It never switches models by itself.
+
+**Real-model tests** call your Ollama server. They are skipped by default and are named separately from the
+mocked tests:
+
+```powershell
+# Windows (PowerShell), from the repository root, with Ollama running
+$env:MATHENGINE_REAL_OLLAMA="1"
+backend\.venv\Scripts\python.exe -m pytest -q -m real_ollama
+```
+
+The mocked assistant tests (`tests/test_assistant.py`) run in the normal `pytest` command and need no model.
 
 ## Two indexes: reviewed content and developer preview
 
@@ -209,11 +244,16 @@ point, not a chosen model. Ollama output is never shown as a verified answer.
   drafts included. The backend opens it only when a request asks for drafts (developer mode). The
   assistant and normal search never use it.
 
-All seed records are `ai_draft` (AI-written, not yet reviewed by a person). So the authoritative
-index is currently empty, and the app shows "No reviewed lessons are published yet." To preview the
-drafts, turn on **Developer mode: show unreviewed AI drafts** in the app. Draft content is then
-labelled "AI draft" and shown with a banner. Checks and hints for draft exercises only work when this
-mode is on.
+All 31 library records are currently `ai_draft` (AI-written, not yet reviewed by a person). So the
+authoritative index is empty. A normal user gets "no reviewed material" for every question, and the app
+shows "No reviewed lessons are published yet." The owner has to decide how records get approved (see
+`MATHENGINE_PROJECT_CONTEXT.md`, section 12). To preview the drafts, turn on **Developer mode: show
+unreviewed AI drafts** in the app. Draft content is then labelled "AI draft", and the answer shows the
+retrieved record IDs. Checks and hints for draft exercises only work when this mode is on.
+
+**Asking a question.** The Ask panel takes a question or a calculation. `7 x 8` is checked by SymPy.
+`multiplication facts` searches the library. `teach me long division` returns the lesson. A broad question
+such as `multiplication` asks which topic you mean. Every answer shows which step produced it.
 
 ## Project layout
 
@@ -250,13 +290,24 @@ data/user/        User progress database. Not committed. Never deleted by index 
   must be an `http://` address on `127.0.0.1` or `localhost`, for example `http://127.0.0.1:8000`.
 - **Ollama status says "responded, but not with the expected model list"**: the server on the Ollama
   address is not a compatible Ollama server. Check `MATHENGINE_OLLAMA_URL`.
+- **Ask panel: "Language model unavailable"**: Ollama is not running, or the address is wrong. Start Ollama, or
+  check `MATHENGINE_OLLAMA_URL`. The library text below the message still works.
+- **Ask panel: "Model ... is not installed"**: run `ollama list`, then set `MATHENGINE_OLLAMA_MODEL` to a name
+  that is installed, or run the `ollama pull` command shown in the message.
+- **Ask panel: "Ollama did not answer within 120 seconds"**: the model is slow on this machine. Try a smaller
+  model, or raise `MATHENGINE_OLLAMA_TIMEOUT`, then restart the backend.
+- **Ask panel: "The model's explanation was not shown"**: the model wrote an arithmetic claim that SymPy
+  could not confirm. The library text is still shown. Nothing is wrong with the library.
+- **Ask panel: "No reviewed material matches"**: expected in the default app until a record is approved.
+  Turn on Developer mode to see the drafts.
 - **Electron download blocked behind a proxy or firewall**: Electron downloads its binary during
   `npm install`. Set your proxy settings, or retry from a network that can reach GitHub releases.
 
 ## Status
 
-Milestone 1 is the foundation: backend, knowledge schema and retrieval, math checking, and a desktop
-shell that talks to the backend. See `MATHENGINE_PROJECT_CONTEXT.md` for what is verified and what is not.
+Milestone 1 is the foundation: backend, knowledge schema and retrieval, math checking, a desktop shell that
+talks to the backend, and the assistant (Qwen through Ollama, bounded context, SymPy guard). The library has 31
+AI-draft records and no approved content yet. See `MATHENGINE_PROJECT_CONTEXT.md` for what is verified and what is not.
 
 The Electron window itself has not been launched in the build environment, because the Electron binary
 could not be downloaded there. Its security settings and IPC rules are tested with a mocked `electron`
