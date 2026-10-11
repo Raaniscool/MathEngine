@@ -103,7 +103,8 @@ function forwardToBackend(req, res, backendUrl) {
       path: target.pathname + target.search,
       method: req.method,
       headers: { "content-type": req.headers["content-type"] ?? "application/json", accept: "application/json" },
-      timeout: 10000,
+      // The assistant waits on a local model, so it gets the same longer limit as the Electron proxy.
+      timeout: target.pathname === "/api/assistant/ask" ? 150000 : 10000,
     },
     (up) => {
       res.writeHead(up.statusCode ?? 502, { "content-type": up.headers["content-type"] ?? "application/json" });

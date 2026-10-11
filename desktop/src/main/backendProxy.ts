@@ -3,7 +3,7 @@
  *
  * Kept free of Electron imports so it can be unit-tested with a fake fetch.
  */
-import { type BackendRequest, type BackendResponse, validateRequest } from "../shared/backendRoutes";
+import { type BackendRequest, type BackendResponse, timeoutForPath, validateRequest } from "../shared/backendRoutes";
 
 export const DEFAULT_BACKEND_URL = "http://127.0.0.1:8000";
 export const REQUEST_TIMEOUT_MS = 10_000;
@@ -33,7 +33,7 @@ export async function forwardRequest(
   payload: unknown,
   baseUrl: string,
   fetchImpl: FetchLike = fetch,
-  timeoutMs: number = REQUEST_TIMEOUT_MS,
+  timeoutMs?: number,
 ): Promise<BackendResponse> {
   let request: BackendRequest;
   try {
@@ -46,7 +46,7 @@ export async function forwardRequest(
     method: request.method,
     headers: request.body === undefined ? { Accept: "application/json" } : { "Content-Type": "application/json", Accept: "application/json" },
     body: request.body === undefined ? undefined : JSON.stringify(request.body),
-    signal: AbortSignal.timeout(timeoutMs),
+    signal: AbortSignal.timeout(timeoutMs ?? timeoutForPath(request.path)),
   };
 
   try {

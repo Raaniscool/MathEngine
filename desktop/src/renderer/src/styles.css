@@ -42,3 +42,19 @@ button.link { background: none; color: #2f5bd3; padding: 0; text-decoration: und
 .error { color: #a12a1f; }
 .provenance { margin-top: 16px; border-top: 1px solid #e4e8f0; padding-top: 8px; }
 code { background: #eef1f6; padding: 1px 4px; border-radius: 4px; }
+
+/* Ask panel */
+.ask-row { display: flex; gap: 8px; }
+.ask-row input { flex: 1; padding: 8px; font: inherit; }
+.ask-result { margin-top: 12px; }
+.ask-result pre { white-space: pre-wrap; background: #f6f7f9; padding: 10px; border-radius: 6px; font-family: inherit; }
+.qwen { border-radius: 6px; padding: 10px; margin: 8px 0; }
+.qwen.ok { background: #eef6ff; }
+.qwen.warn { background: #fff6e5; }
+.qwen-text { white-space: pre-wrap; }
+.loading { color: #3a4a5e; }
+.muted { color: #5b6573; font-size: 0.9em; }
+.draft-label { color: #7a4b00; font-weight: 600; }
+.dev-ids { font-family: ui-monospace, Consolas, monospace; font-size: 0.85em; color: #5b6573; }
+.choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.choice { border: 1px solid #c8d0db; background: #fff; border-radius: 16px; padding: 4px 10px; cursor: pointer; }

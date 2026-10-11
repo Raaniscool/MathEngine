@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ConceptDetail, HealthResponse, OllamaStatusResponse, SearchResponse } from "../../shared/apiTypes";
 import { api, describeFailure } from "./api";
+import { AskPanel } from "./components/AskPanel";
 import { ConceptView } from "./components/ConceptView";
 import { SearchPanel } from "./components/SearchPanel";
 import { StatusBar } from "./components/StatusBar";
@@ -63,6 +64,7 @@ export function App() {
       <div className="layout">
         <SearchPanel result={searchResult} busy={busy} onSearch={search} onOpen={open} />
         <div className="content">
+          <AskPanel includeDrafts={includeDrafts} onOpen={open} />
           {concept ? (
             <ConceptView concept={concept} includeDrafts={includeDrafts} onOpen={open} />
           ) : (

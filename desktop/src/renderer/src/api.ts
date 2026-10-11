@@ -4,6 +4,7 @@
  */
 import type { BackendResponse } from "../../shared/backendRoutes";
 import type {
+  AssistantResponse,
   CheckResponse,
   ConceptDetail,
   HealthResponse,
@@ -73,6 +74,12 @@ export const api = {
       exercise_id: exerciseId,
       answer,
       include_drafts: includeDrafts,
+    }),
+  ask: (question: string, options: { includeDrafts: boolean }) =>
+    call<AssistantResponse>("POST", "/api/assistant/ask", {
+      question,
+      include_drafts: options.includeDrafts,
+      include_diagnostics: options.includeDrafts, // developer mode shows retrieved record ids
     }),
   hint: (conceptId: string, exerciseId: string, index: number, includeDrafts: boolean) =>
     call<HintResponse>("POST", "/api/exercises/hint", {

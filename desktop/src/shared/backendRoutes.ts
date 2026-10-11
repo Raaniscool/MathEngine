@@ -43,7 +43,18 @@ export const ALLOWED_ROUTES: readonly Route[] = [
   { method: "GET", pattern: new RegExp(`^/api/progress/summary${QUERY}$`) },
   { method: "POST", pattern: /^\/api\/exercises\/(check|hint)$/ },
   { method: "POST", pattern: /^\/api\/math\/evaluate$/ },
+  { method: "POST", pattern: /^\/api\/assistant\/ask$/ },
 ];
+
+export const DEFAULT_TIMEOUT_MS = 10_000;
+// A local model can take a while to answer. This must stay above the backend's model timeout
+// (MATHENGINE_OLLAMA_TIMEOUT, default 120 s) so the backend, not the proxy, reports a slow model.
+export const ASSISTANT_TIMEOUT_MS = 150_000;
+
+/** How long the proxy waits for a route. Only the assistant route, which waits on a local model, gets longer. */
+export function timeoutForPath(path: string): number {
+  return /^\/api\/assistant\/ask(\?|$)/.test(path) ? ASSISTANT_TIMEOUT_MS : DEFAULT_TIMEOUT_MS;
+}
 
 export function isAllowedRoute(method: string, path: string): boolean {
   return ALLOWED_ROUTES.some((route) => route.method === method && route.pattern.test(path));

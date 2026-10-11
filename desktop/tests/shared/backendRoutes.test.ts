@@ -56,3 +56,16 @@ describe("validateRequest", () => {
     expect(() => validateRequest({ method: "GET", path: "/api/" + "a".repeat(600) })).toThrow(/too long/);
   });
 });
+
+describe("assistant route", () => {
+  it("allows POST /api/assistant/ask and nothing else under it", async () => {
+    const { isAllowedRoute, timeoutForPath, ASSISTANT_TIMEOUT_MS, DEFAULT_TIMEOUT_MS } = await import("../../src/shared/backendRoutes");
+    expect(isAllowedRoute("POST", "/api/assistant/ask")).toBe(true);
+    expect(isAllowedRoute("GET", "/api/assistant/ask")).toBe(false);
+    expect(isAllowedRoute("POST", "/api/assistant/ask/../../health")).toBe(false);
+    expect(isAllowedRoute("POST", "/api/assistant/anything-else")).toBe(false);
+    expect(timeoutForPath("/api/assistant/ask")).toBe(ASSISTANT_TIMEOUT_MS);
+    expect(timeoutForPath("/api/concepts?q=x")).toBe(DEFAULT_TIMEOUT_MS);
+    expect(ASSISTANT_TIMEOUT_MS).toBeGreaterThan(120_000); // longer than the backend's default model timeout
+  });
+});

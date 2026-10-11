@@ -102,3 +102,46 @@ export interface HintResponse {
   has_more: boolean;
   hint: string;
 }
+
+export interface AssistantOption {
+  id: string;
+  title: string;
+  subject: string;
+  topic: string;
+}
+
+export interface AssistantLibraryText {
+  id: string;
+  text: string;
+  sources: string[];
+}
+
+/** What Qwen said, and whether the app allowed it to be shown. `not_used` means the model was not needed. */
+export interface AssistantQwen {
+  status: "ok" | "blocked" | "unavailable" | "not_used";
+  model?: string;
+  text?: string;
+  error?: string;
+  reason?: string;
+  guard?: { allowed: boolean; checked_claims: number; wrong_claims: string[]; undecided_claims: string[] };
+}
+
+export interface AssistantResponse {
+  question: string;
+  intent: "solve" | "practice" | "lesson" | "explain" | "search" | "clarify";
+  intent_reason: string;
+  includes_drafts: boolean;
+  status: "answer" | "clarify" | "not_found" | "verified" | "unsupported";
+  message?: string;
+  options?: AssistantOption[];
+  suggestions?: AssistantOption[];
+  concepts?: AssistantOption[];
+  library?: AssistantLibraryText[];
+  next_steps?: { id: string; title: string }[];
+  expression?: string;
+  result?: string;
+  approximate?: string | null;
+  verified_by?: string;
+  retrieved_ids?: string[]; // developer mode only
+  qwen: AssistantQwen;
+}
