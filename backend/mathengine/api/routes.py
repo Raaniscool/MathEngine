@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .. import __version__
 from ..ai.actions import CONCEPT_ID, EXERCISE_ID, describe_actions, execute_action
+from ..ai.assistant import MAX_QUESTION_CHARS, answer_question
 from ..knowledge.models import Subject
 from ..knowledge.retrieval import Retriever
 from ..knowledge.views import concept_detail, concept_summary
@@ -38,6 +39,12 @@ class HintRequest(_Body):
     exercise_id: str = Field(pattern=EXERCISE_ID, max_length=60)
     index: int = Field(default=0, ge=0, le=10)
     include_drafts: bool = False
+
+
+class AssistantRequest(_Body):
+    question: str = Field(min_length=1, max_length=MAX_QUESTION_CHARS)
+    include_drafts: bool = False  # developer mode only: unreviewed drafts may be used and are labelled
+    include_diagnostics: bool = False  # developer mode only: adds retrieved record ids
 
 
 class EvaluateRequest(_Body):
@@ -164,6 +171,19 @@ def run_action(
     """Run one allowlisted action. Failures are returned as ok=false with HTTP 400."""
     result = execute_action(name, arguments, state.action_context())
     return JSONResponse(status_code=200 if result["ok"] else 400, content=result)
+
+
+@router.post("/assistant/ask")
+def assistant_ask(state: State, body: AssistantRequest) -> dict[str, Any]:
+    """Answer a question from the library. Qwen is optional: the response says so when it is unavailable."""
+    store = state.knowledge(include_drafts=body.include_drafts)
+    return answer_question(
+        body.question,
+        store=store,
+        ollama=state.ollama,
+        include_drafts=body.include_drafts,
+        include_diagnostics=body.include_diagnostics,
+    )
 
 
 @router.post("/knowledge/reload")

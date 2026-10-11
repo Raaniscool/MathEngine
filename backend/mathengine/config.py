@@ -16,6 +16,7 @@ class Settings:
 
     ollama_url: str
     ollama_model: str
+    ollama_timeout_seconds: float = 120.0  # how long one assistant request may wait for the model
 
     @property
     def index_path(self) -> Path:
@@ -33,6 +34,14 @@ class Settings:
         return self.data_dir / "user" / "progress.sqlite"
 
 
+def _positive_float(raw: str | None, default: float) -> float:
+    try:
+        value = float(raw) if raw else default
+    except ValueError:
+        return default
+    return value if value > 0 else default
+
+
 def load_settings() -> Settings:
     return Settings(
         knowledge_dir=Path(os.environ.get("MATHENGINE_KNOWLEDGE_DIR", REPO_ROOT / "knowledge")),
@@ -40,4 +49,5 @@ def load_settings() -> Settings:
         ollama_url=os.environ.get("MATHENGINE_OLLAMA_URL", "http://127.0.0.1:11434"),
         # Starting point only. Benchmark small models on real assistant tasks before committing to one.
         ollama_model=os.environ.get("MATHENGINE_OLLAMA_MODEL", "qwen2.5:1.5b"),
+        ollama_timeout_seconds=_positive_float(os.environ.get("MATHENGINE_OLLAMA_TIMEOUT"), 120.0),
     )

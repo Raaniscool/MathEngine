@@ -77,7 +77,12 @@ def create_app(settings: Settings | None = None, ollama_transport=None) -> FastA
     state = AppState(
         settings=settings,
         progress=ProgressStore(settings.progress_path),
-        ollama=OllamaClient(settings.ollama_url, settings.ollama_model, transport=ollama_transport),
+        ollama=OllamaClient(
+            settings.ollama_url,
+            settings.ollama_model,
+            generate_timeout=settings.ollama_timeout_seconds,
+            transport=ollama_transport,
+        ),
     )
 
     app = FastAPI(title="MathEngine backend", version=__version__)

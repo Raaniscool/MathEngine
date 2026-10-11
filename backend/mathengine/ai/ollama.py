@@ -58,9 +58,11 @@ class OllamaClient:
         model: str,
         *,
         timeout: float = 3.0,
+        generate_timeout: float = 120.0,
         transport: httpx.BaseTransport | None = None,
     ) -> None:
         self._model = model
+        self._generate_timeout = generate_timeout
         self._client = httpx.Client(base_url=base_url, timeout=timeout, transport=transport)
 
     @property
@@ -90,7 +92,12 @@ class OllamaClient:
 
         wanted = _normalize_model_name(self._model)
         model_installed = any(_normalize_model_name(name) == wanted for name in installed)
-        error = None if model_installed else f"Model '{self._model}' is not installed. Run: ollama pull {self._model}"
+        error = None
+        if not model_installed:
+            error = f"Model '{self._model}' is not installed. Run: ollama pull {self._model}"
+            qwen_models = [name for name in installed if "qwen" in name.lower()]
+            if qwen_models:
+                error += f" Installed Qwen models you can set in MATHENGINE_OLLAMA_MODEL: {', '.join(qwen_models)}."
         return OllamaStatus(True, self._model, model_installed, installed, error)
 
     def generate(self, prompt: str, system: str | None = None) -> str:
@@ -99,9 +106,16 @@ class OllamaClient:
         if system:
             payload["system"] = system
         try:
-            response = self._client.post("/api/generate", json=payload, timeout=120.0)
+            response = self._client.post("/api/generate", json=payload, timeout=self._generate_timeout)
+        except httpx.TimeoutException as exc:
+            raise OllamaUnavailableError(
+                f"Ollama did not answer within {self._generate_timeout:g} seconds. Try again, use a smaller "
+                "model, or raise MATHENGINE_OLLAMA_TIMEOUT."
+            ) from exc
         except (httpx.HTTPError, ValueError) as exc:
             raise OllamaUnavailableError("Ollama is not reachable. Start Ollama and try again.") from exc
+        if response.status_code == 404:
+            raise OllamaUnavailableError(f"Model '{self._model}' is not installed. Run: ollama pull {self._model}")
         if response.status_code >= 400:
             raise OllamaUnavailableError(
                 f"Ollama rejected the request (HTTP {response.status_code}). Is '{self._model}' installed?"

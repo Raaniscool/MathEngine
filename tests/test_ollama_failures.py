@@ -143,7 +143,7 @@ def test_generate_rejects_empty_or_whitespace_text():
 
 def test_generate_404_for_missing_model_gives_pull_hint():
     handler = _respond(404, json_body={"error": "model 'qwen2.5:1.5b' not found"})
-    with pytest.raises(OllamaUnavailableError, match="HTTP 404.*Is 'qwen2.5:1.5b' installed"):
+    with pytest.raises(OllamaUnavailableError, match="is not installed. Run: ollama pull qwen2.5:1.5b"):
         _client(handler).generate("hello")
 
 
@@ -152,10 +152,14 @@ def test_generate_500_is_a_clear_error_not_a_crash():
         _client(_respond(500, json_body={"error": "out of memory"})).generate("hello")
 
 
-@pytest.mark.parametrize("exc", [httpx.ReadTimeout("slow"), httpx.ConnectError("refused")])
-def test_generate_timeouts_and_connection_errors_are_typed(exc):
+def test_generate_connection_errors_are_typed():
     with pytest.raises(OllamaUnavailableError, match="not reachable"):
-        _client(_raise(exc)).generate("hello")
+        _client(_raise(httpx.ConnectError("refused"))).generate("hello")
+
+
+def test_generate_timeouts_are_typed_and_say_how_long_it_waited():
+    with pytest.raises(OllamaUnavailableError, match="did not answer within 120 seconds"):
+        _client(_raise(httpx.ReadTimeout("slow"))).generate("hello")
 
 
 def test_generate_returns_text_from_a_valid_body():
