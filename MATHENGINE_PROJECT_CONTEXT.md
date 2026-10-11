@@ -259,11 +259,24 @@ Tests cover schema rejection of bad records, loader and structure validation, re
 methods and honesty rules, the API (including draft visibility), progress separation, Ollama failure modes,
 allowlisted actions, the route allowlist, and the React UI against the real backend.
 
+**Browser check of the production renderer (headless Chromium 131, outside the repo):**
+
+- The built `desktop/out/renderer` was served and driven in headless Chromium under its production CSP. No
+  console errors, no page errors, and no CSP violations.
+- Flow verified: connected status; empty-library welcome; default search hides drafts; developer mode shows the
+  draft banner; a verified answer check shows "Correct." and "Checked by the math engine."
+- `window.mathengine` was a test shim that forwarded to the repo's real main-process proxy (validation,
+  allowlist, timeouts), which called the live backend.
+- A negative control (same CSP, deliberate inline script) confirmed that violations are detected, so the
+  clean result is meaningful.
+
 **Not verified:**
 
-- **The Electron window has not been launched.** The Electron binary download is blocked in the build
-  sandbox. The renderer was tested in jsdom instead. The window, preload wiring, and CSP in a real Chromium
-  process still need a manual check on Windows: run the backend, then `npm run dev` in `desktop/`.
+- **The Electron window has not been launched.** The Electron binary is hosted on GitHub, which redirects
+  to `objects.githubusercontent.com`. That host fails the TLS handshake in this sandbox, so the binary cannot
+  be downloaded. The browser check above does not cover the main process, preload script, or window settings
+  (`contextIsolation`, `sandbox`, `will-navigate` handling). Those still need a manual check on Windows: run
+  the backend, then `npm run dev` in `desktop/`.
 - **Ollama has not been tested with a live model.** It is not installed in the build sandbox. Only the
   unreachable and model-missing states were checked.
 - **Windows commands** have not been run on Windows. They follow the same steps as the Linux run.
