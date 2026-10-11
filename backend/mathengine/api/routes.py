@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from .. import __version__
 from ..ai.actions import CONCEPT_ID, EXERCISE_ID, describe_actions, execute_action
 from ..knowledge.models import Subject
+from ..knowledge.retrieval import Retriever
 from ..knowledge.views import concept_detail, concept_summary
 from ..math.evaluate import evaluate_expression
 from .app import AppState, get_state
@@ -29,7 +30,7 @@ class CheckRequest(_Body):
     concept_id: str = Field(pattern=CONCEPT_ID, max_length=120)
     exercise_id: str = Field(pattern=EXERCISE_ID, max_length=60)
     answer: str = Field(min_length=1, max_length=500)
-    include_drafts: bool = False  # development only: unreviewed AI drafts are hidden unless asked for
+    include_drafts: bool = False  # developer mode only: reads the preview index, which holds unreviewed drafts
 
 
 class HintRequest(_Body):
@@ -53,7 +54,9 @@ def health(state: State) -> dict[str, Any]:
         "knowledge": {
             "index_built": store is not None,
             "concept_count": store.concept_count if store else 0,
-            "draft_count": store.draft_count if store else 0,
+            # Drafts are never in the authoritative index. This counts the ones left out of it.
+            "excluded_draft_count": int(store.meta.get("excluded_draft_count", 0)) if store else 0,
+            "developer_preview_built": state.dev_store is not None,
             "error": state.store_error,
         },
     }
@@ -73,7 +76,7 @@ def ollama_status(state: State) -> dict[str, Any]:
 
 @router.get("/subjects")
 def subjects(state: State, include_drafts: bool = False) -> dict[str, Any]:
-    store = state.knowledge()
+    store = state.knowledge(include_drafts)
     return {"subjects": [{"subject": name, "concept_count": count} for name, count in store.subject_counts(include_drafts)]}
 
 
@@ -85,16 +88,15 @@ def search_concepts(
     include_drafts: bool = False,
     limit: Annotated[int, Query(ge=1, le=20)] = 5,
 ) -> dict[str, Any]:
-    store = state.knowledge()
+    store = state.knowledge(include_drafts)
     if not q.strip():
         concepts = store.all_concepts(subject=subject, include_drafts=include_drafts)
-        return {"query": q, "status": "listing", "message": "", "hits": [concept_summary(c) for c in concepts], "hidden_draft_matches": 0}
-    result = state.action_context().retriever.search(q, subject=subject, include_drafts=include_drafts, limit=limit)
+        return {"query": q, "status": "listing", "message": "", "hits": [concept_summary(c) for c in concepts]}
+    result = Retriever(store).search(q, subject=subject, include_drafts=include_drafts, limit=limit)
     return {
         "query": result.query,
         "status": result.status,
         "message": result.message,
-        "hidden_draft_matches": result.hidden_draft_matches,
         "hits": [
             {
                 "concept_id": hit.concept_id,
@@ -113,14 +115,14 @@ def search_concepts(
 
 @router.get("/concepts/{concept_id}")
 def get_concept(state: State, concept_id: ConceptPath, include_drafts: bool = False) -> dict[str, Any]:
-    store = state.knowledge()
+    store = state.knowledge(include_drafts)
     concept = store.get(concept_id, include_drafts=include_drafts)
     return concept_detail(concept, store, include_drafts)
 
 
 @router.post("/exercises/check")
 def check_exercise(state: State, body: CheckRequest) -> dict[str, Any]:
-    outcome = state.exercises().check(body.concept_id, body.exercise_id, body.answer, body.include_drafts)
+    outcome = state.exercises(body.include_drafts).check(body.concept_id, body.exercise_id, body.answer, body.include_drafts)
     return {
         "verdict": outcome.verdict.value,
         "verified": outcome.verified,
@@ -133,7 +135,7 @@ def check_exercise(state: State, body: CheckRequest) -> dict[str, Any]:
 
 @router.post("/exercises/hint")
 def hint_exercise(state: State, body: HintRequest) -> dict[str, Any]:
-    outcome = state.exercises().hint(body.concept_id, body.exercise_id, body.index, body.include_drafts)
+    outcome = state.exercises(body.include_drafts).hint(body.concept_id, body.exercise_id, body.index, body.include_drafts)
     return {"hint_index": outcome.hint_index, "hint_count": outcome.hint_count, "has_more": outcome.has_more, "hint": outcome.text}
 
 

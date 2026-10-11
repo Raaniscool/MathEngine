@@ -38,14 +38,28 @@ def settings(data_dir: Path) -> Settings:
 
 @pytest.fixture
 def built_index(data_dir: Path) -> Path:
-    """Build the real knowledge library into a temporary index and return its path."""
+    """The AUTHORITATIVE index built from the real library. It contains no drafts."""
     report = load_knowledge(KNOWLEDGE_DIR)
     assert report.ok, [str(issue) for issue in report.errors]
     return build_index(report, data_dir / "generated" / "knowledge.sqlite").index_path
 
 
 @pytest.fixture
-def store(built_index: Path) -> KnowledgeStore:
+def dev_index(data_dir: Path) -> Path:
+    """The DEVELOPER PREVIEW index built from the real library. It contains every record, drafts included."""
+    report = load_knowledge(KNOWLEDGE_DIR)
+    assert report.ok, [str(issue) for issue in report.errors]
+    return build_index(report, data_dir / "generated" / "knowledge-dev.sqlite", include_drafts=True).index_path
+
+
+@pytest.fixture
+def store(dev_index: Path) -> KnowledgeStore:
+    """The full library, drafts included. Used by tests that exercise draft content on purpose."""
+    return KnowledgeStore.open(dev_index, expect_drafts=True)
+
+
+@pytest.fixture
+def authoritative_store(built_index: Path) -> KnowledgeStore:
     return KnowledgeStore.open(built_index)
 
 

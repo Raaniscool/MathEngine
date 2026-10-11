@@ -1,7 +1,7 @@
 """Command-line tools for the knowledge library.
 
     python -m mathengine.cli validate        # check every record; exit code 1 if anything is wrong
-    python -m mathengine.cli build-index     # validate, then rebuild data/generated/knowledge.sqlite
+    python -m mathengine.cli build-index     # validate, then rebuild the authoritative index and the developer preview
 
 build-index never touches user progress and never replaces the old index unless validation passes.
 """
@@ -24,7 +24,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--data-dir", type=Path, default=settings.data_dir)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("validate", help="validate all knowledge records")
-    commands.add_parser("build-index", help="validate, then rebuild the generated index")
+    commands.add_parser("build-index", help="validate, then rebuild the generated indexes")
     args = parser.parse_args(argv)
 
     report = load_knowledge(args.knowledge_dir)
@@ -36,17 +36,24 @@ def main(argv: list[str] | None = None) -> int:
         print("Validation passed." if report.ok else f"Validation FAILED with {len(report.errors)} error(s).")
         return 0 if report.ok else 1
 
-    index_path = args.data_dir / "generated" / "knowledge.sqlite"
+    generated = args.data_dir / "generated"
     try:
-        stats = build_index(report, index_path)
+        authoritative = build_index(report, generated / settings.index_path.name)
+        preview = build_index(report, generated / settings.dev_index_path.name, include_drafts=True)
     except IndexBuildError as exc:
         print(f"ERROR {exc}", file=sys.stderr)
         return 1
     print(
-        f"Index built: {stats.concept_count} concept(s) "
-        f"({stats.draft_count} unreviewed draft(s) hidden by default), {stats.term_count} term row(s)."
+        f"Authoritative index: {authoritative.concept_count} reviewed concept(s), "
+        f"{authoritative.excluded_draft_count} unreviewed draft(s) excluded, "
+        f"{authoritative.term_count} term row(s)."
     )
-    print(f"Written to {stats.index_path}")
+    print(f"Written to {authoritative.index_path}")
+    print(
+        f"Developer preview index: {preview.concept_count} concept(s) including "
+        f"{preview.draft_count} unreviewed draft(s). Used only in developer mode."
+    )
+    print(f"Written to {preview.index_path}")
     return 0
 
 

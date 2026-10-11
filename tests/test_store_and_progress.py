@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from mathengine.errors import IndexNotBuiltError
-from mathengine.knowledge.index import build_index
+from mathengine.knowledge.index import IndexBuildError, build_index
 from mathengine.knowledge.loader import load_knowledge
 from mathengine.knowledge.store import KnowledgeStore
 from mathengine.learning.progress import ProgressStore
@@ -27,16 +27,50 @@ def test_store_returns_draft_records_only_when_asked(store):
     assert len(store.all_concepts(include_drafts=True)) == 5
 
 
+def test_authoritative_index_holds_reviewed_content_only(authoritative_store):
+    assert authoritative_store.draft_count == 0
+    assert authoritative_store.concept_count == 0
+    assert authoritative_store.meta["excluded_draft_count"] == "5"
+    assert authoritative_store.meta["draft_content"] == "excluded"
+
+
+def test_preview_index_is_refused_as_authoritative_and_vice_versa(built_index, dev_index):
+    with pytest.raises(IndexNotBuiltError, match="not the authoritative index"):
+        KnowledgeStore.open(dev_index)
+    with pytest.raises(IndexNotBuiltError, match="not the developer preview index"):
+        KnowledgeStore.open(built_index, expect_drafts=True)
+
+
+def test_reviewed_record_linking_to_a_draft_is_rejected(tmp_path):
+    from helpers import published_record, record, write_yaml
+
+    library = tmp_path / "library"
+    write_yaml(library, "arithmetic/draft.yaml", record(id="arithmetic.testing.draft"))
+    write_yaml(
+        library,
+        "arithmetic/published.yaml",
+        {**published_record(), "related": ["arithmetic.testing.draft"]},
+    )
+    report = load_knowledge(library)
+    assert report.ok, [str(issue) for issue in report.errors]
+    with pytest.raises(IndexBuildError, match="links to unreviewed draft arithmetic.testing.draft"):
+        build_index(report, tmp_path / "data" / "knowledge.sqlite")
+    # The developer preview may still include both, because it is never used for students.
+    build_index(report, tmp_path / "data" / "knowledge-dev.sqlite", include_drafts=True)
+
+
 def test_missing_index_gives_an_actionable_error(tmp_path):
     with pytest.raises(IndexNotBuiltError, match="build-index"):
         KnowledgeStore.open(tmp_path / "nope.sqlite")
 
 
 def test_index_rebuild_is_deterministic_and_fingerprinted(knowledge_dir, tmp_path):
-    first = build_index(load_knowledge(knowledge_dir), tmp_path / "a.sqlite")
-    second = build_index(load_knowledge(knowledge_dir), tmp_path / "b.sqlite")
+    first = build_index(load_knowledge(knowledge_dir), tmp_path / "a.sqlite", include_drafts=True)
+    second = build_index(load_knowledge(knowledge_dir), tmp_path / "b.sqlite", include_drafts=True)
     assert first.concept_count == second.concept_count == 5
-    assert KnowledgeStore.open(first.index_path).meta["source_fingerprint"] == KnowledgeStore.open(second.index_path).meta["source_fingerprint"]
+    first_store = KnowledgeStore.open(first.index_path, expect_drafts=True)
+    second_store = KnowledgeStore.open(second.index_path, expect_drafts=True)
+    assert first_store.meta["source_fingerprint"] == second_store.meta["source_fingerprint"]
 
 
 def test_progress_survives_an_index_rebuild(knowledge_dir, data_dir):

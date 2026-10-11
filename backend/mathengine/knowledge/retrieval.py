@@ -53,7 +53,6 @@ class SearchResult:
     status: str  # matches | ambiguous | insufficient | needs_clarification
     message: str
     hits: tuple[SearchHit, ...] = ()
-    hidden_draft_matches: int = 0  # unreviewed drafts that matched but were hidden
 
 
 class Retriever:
@@ -78,21 +77,12 @@ class Retriever:
             )
 
         hits = self._rank(query, subject, include_drafts)
-        hidden = 0
-        if not include_drafts:
-            hidden = len(self._rank(query, subject, include_drafts=True)) - len(hits)
-
         if not hits:
-            message = f"No reviewed material matches '{query.strip()}'."
-            if hidden:
-                message += (
-                    f" {hidden} unreviewed AI draft(s) match, but they are hidden until a reviewer approves them."
-                )
-            return SearchResult(query, "insufficient", message, hidden_draft_matches=hidden)
+            return SearchResult(query, "insufficient", f"No reviewed material matches '{query.strip()}'.")
 
         best = hits[0]
         if best.exact_match:
-            return SearchResult(query, "matches", "Exact match found.", tuple(hits[:limit]), hidden)
+            return SearchResult(query, "matches", "Exact match found.", tuple(hits[:limit]))
         if len(hits) > 1 and hits[1].score >= AMBIGUITY_RATIO * best.score:
             close = tuple(hit for hit in hits if hit.score >= AMBIGUITY_RATIO * best.score)[:limit]
             titles = ", ".join(f"'{hit.title}'" for hit in close)
@@ -101,9 +91,8 @@ class Retriever:
                 "ambiguous",
                 f"Several concepts match. Which one did you mean: {titles}?",
                 close,
-                hidden,
             )
-        return SearchResult(query, "matches", "Matching concepts found.", tuple(hits[:limit]), hidden)
+        return SearchResult(query, "matches", "Matching concepts found.", tuple(hits[:limit]))
 
     def _rank(self, query: str, subject: str | None, include_drafts: bool) -> list[SearchHit]:
         terms = list(dict.fromkeys(tokens(query)))  # unique, order kept

@@ -16,7 +16,7 @@ export function StatusBar({ health, healthError, ollama, ollamaError }: Props) {
           <span>
             Connected · v{health.version}
             {health.knowledge.index_built
-              ? ` · ${health.knowledge.concept_count} published, ${health.knowledge.draft_count} draft`
+              ? ` · ${health.knowledge.concept_count} reviewed concept(s)`
               : " · knowledge index not built"}
           </span>
         ) : (

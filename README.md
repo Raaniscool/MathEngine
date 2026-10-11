@@ -133,12 +133,21 @@ ollama pull qwen2.5:1.5b
 The model name is set by `MATHENGINE_OLLAMA_MODEL`. The default is `qwen2.5:1.5b`, which is a starting
 point, not a chosen model. Ollama output is never shown as a verified answer.
 
-## Developer mode: unreviewed AI drafts
+## Two indexes: reviewed content and developer preview
 
-All seed records are `ai_draft` (AI-written, not yet reviewed by a person). They are hidden from
-normal search and lessons. To view them, turn on **Developer mode: show unreviewed AI drafts** in the
-app. Draft content is then labelled "AI draft" and shown with a banner. Checks and hints for draft
-exercises only work when this mode is on.
+`build-index` writes two files, both generated from `knowledge/`:
+
+- `data/generated/knowledge.sqlite` is the **authoritative index**. It contains reviewed and verified
+  records only. Unreviewed AI drafts are never written to it. Everything students see comes from here.
+- `data/generated/knowledge-dev.sqlite` is the **developer preview index**. It contains every record,
+  drafts included. The backend opens it only when a request asks for drafts (developer mode). The
+  assistant and normal search never use it.
+
+All seed records are `ai_draft` (AI-written, not yet reviewed by a person). So the authoritative
+index is currently empty, and the app shows "No reviewed lessons are published yet." To preview the
+drafts, turn on **Developer mode: show unreviewed AI drafts** in the app. Draft content is then
+labelled "AI draft" and shown with a banner. Checks and hints for draft exercises only work when this
+mode is on.
 
 ## Project layout
 
@@ -154,8 +163,11 @@ data/user/        User progress database. Not committed. Never deleted by index 
 ## Troubleshooting
 
 - **"Backend is not reachable"**: start the backend (step 4). Check the port and that no other program uses it.
-- **Draft exercise returns 404**: turn on Developer mode, or the draft is hidden as intended.
-- **`build-index` refuses to run**: run `validate` and fix the reported record errors first.
+- **Draft lesson returns 404**: drafts are not in the authoritative index. Turn on Developer mode to preview them.
+- **"No reviewed lessons are published yet"**: expected until a reviewer approves a record.
+- **Developer mode says the preview index is missing**: run `build-index`.
+- **`build-index` refuses to run**: run `validate` and fix the reported record errors first. It also refuses
+  when a reviewed record links to a draft. Review the draft, or remove the link.
 - **Backend running old code after edits**: restart uvicorn. It does not reload automatically.
 - **`npm install` fails on Node versions older than 20.19**: upgrade Node.js.
 - **Electron download blocked behind a proxy or firewall**: Electron downloads its binary during

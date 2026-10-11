@@ -68,10 +68,17 @@ export function App() {
           ) : (
             <section className="panel">
               <h2>Welcome</h2>
-              <p>
-                Search for a concept, such as <em>multiplication facts</em> or <em>power rule</em>. Lessons, hints
-                and answer checks all come from the knowledge library on the backend.
-              </p>
+              {health?.knowledge.index_built && health.knowledge.concept_count === 0 && !includeDrafts ? (
+                <p>
+                  No reviewed lessons are published yet. Lessons appear here once a reviewer approves them.
+                  Developer mode can preview unreviewed AI drafts.
+                </p>
+              ) : (
+                <p>
+                  Search for a concept, such as <em>multiplication facts</em> or <em>power rule</em>. Lessons, hints
+                  and answer checks all come from the knowledge library on the backend.
+                </p>
+              )}
             </section>
           )}
         </div>

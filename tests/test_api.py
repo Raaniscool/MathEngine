@@ -24,8 +24,8 @@ def _app(settings: Settings, handler=None):
 
 
 @pytest.fixture
-def client(settings, built_index) -> TestClient:
-    """Real knowledge library (all drafts) with the index built."""
+def client(settings, built_index, dev_index) -> TestClient:
+    """Real knowledge library: the authoritative index and the developer preview index are both built."""
     return TestClient(_app(settings))
 
 
@@ -44,8 +44,9 @@ def test_health_reports_index_state(client):
     body = client.get("/api/health").json()
     assert body["status"] == "ok"
     assert body["knowledge"]["index_built"] is True
-    assert body["knowledge"]["draft_count"] == 5
-    assert body["knowledge"]["concept_count"] == 0
+    assert body["knowledge"]["concept_count"] == 0  # no reviewed content yet
+    assert body["knowledge"]["excluded_draft_count"] == 5
+    assert body["knowledge"]["developer_preview_built"] is True
 
 
 def test_health_still_works_without_an_index(settings):
@@ -72,6 +73,24 @@ def test_draft_concepts_are_visible_only_when_explicitly_requested(client):
     assert response.json()["verification"]["status"] == "ai_draft"
     search = client.get("/api/concepts?q=multiplication&include_drafts=true").json()
     assert search["status"] == "ambiguous"
+
+
+def test_authoritative_index_file_contains_no_draft_content(settings, client):
+    """Drafts must not be in the authoritative file at all, not merely hidden by a flag."""
+    raw = settings.index_path.read_bytes()
+    assert POWER_RULE.encode() not in raw
+    assert b"Power rule for derivatives" not in raw
+    assert FACTS.encode() not in raw
+    assert b"times tables" not in raw
+
+
+def test_developer_mode_is_a_clear_error_when_the_preview_index_is_missing(settings, built_index):
+    client = TestClient(_app(settings))
+    response = client.get(f"/api/concepts/{POWER_RULE}?include_drafts=true")
+    assert response.status_code == 503
+    assert "build-index" in response.json()["detail"]
+    # Normal use is unaffected by the missing preview index.
+    assert client.get("/api/subjects").status_code == 200
 
 
 def test_concept_detail_never_contains_answer_keys(client):

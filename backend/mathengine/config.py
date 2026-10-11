@@ -19,8 +19,13 @@ class Settings:
 
     @property
     def index_path(self) -> Path:
-        """Generated, rebuildable knowledge index."""
+        """Authoritative, generated knowledge index. Reviewed and verified records only."""
         return self.data_dir / "generated" / "knowledge.sqlite"
+
+    @property
+    def dev_index_path(self) -> Path:
+        """Developer preview index with unreviewed drafts. Never used unless a request asks for drafts."""
+        return self.data_dir / "generated" / "knowledge-dev.sqlite"
 
     @property
     def progress_path(self) -> Path:

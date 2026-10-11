@@ -111,19 +111,23 @@ def test_subject_filter_excludes_other_subjects(retriever):
 
 # --- trust gate ------------------------------------------------------------------------------
 
-def test_unreviewed_drafts_are_hidden_by_default_and_counted(retriever):
-    result = retriever.search("power rule")
+def test_authoritative_search_gives_no_hint_that_drafts_exist(authoritative_store):
+    result = Retriever(authoritative_store).search("power rule")
     assert result.status == "insufficient"
     assert result.hits == ()
-    assert result.hidden_draft_matches >= 1
-    assert "hidden until a reviewer approves them" in result.message
+    assert "draft" not in result.message.lower()
+
+
+def test_authoritative_store_cannot_fetch_drafts_even_when_asked(authoritative_store):
+    with pytest.raises(NotFoundError, match="No concept"):
+        authoritative_store.get(POWER_RULE, include_drafts=True)
 
 
 def test_drafts_can_be_requested_explicitly_for_development(retriever):
     assert _top(retriever.search("power rule", include_drafts=True)) == POWER_RULE
 
 
-def test_hidden_draft_cannot_be_fetched_by_id(store):
+def test_preview_store_hides_drafts_unless_asked(store):
     with pytest.raises(NotFoundError, match="unreviewed AI draft"):
         store.get(POWER_RULE)
     assert store.get(POWER_RULE, include_drafts=True).title == "Power rule for derivatives"
@@ -165,8 +169,8 @@ def test_context_never_contains_exercise_answers_or_hints(tmp_path):
     write_yaml(tmp_path / "knowledge", "arithmetic/sample.yaml", record(exercises=[exercise]))
     report = load_knowledge(tmp_path / "knowledge")
     assert report.ok, [str(issue) for issue in report.errors]
-    index_path = build_index(report, tmp_path / "data" / "knowledge.sqlite").index_path
-    store = KnowledgeStore.open(index_path)
+    index_path = build_index(report, tmp_path / "data" / "knowledge-dev.sqlite", include_drafts=True).index_path
+    store = KnowledgeStore.open(index_path, expect_drafts=True)
 
     context = ContextBuilder(store).build("arithmetic.testing.sample", include_drafts=True).text
     assert secret_answer not in context

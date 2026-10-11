@@ -9,8 +9,9 @@ export interface HealthResponse {
   version: string;
   knowledge: {
     index_built: boolean;
-    concept_count: number;
-    draft_count: number;
+    concept_count: number; // reviewed and verified concepts only
+    excluded_draft_count: number; // unreviewed AI drafts kept out of the authoritative index
+    developer_preview_built: boolean; // whether developer mode can load drafts
     error: string | null;
   };
 }
@@ -42,7 +43,6 @@ export interface SearchResponse {
   query: string;
   status: "listing" | "matches" | "ambiguous" | "insufficient" | "needs_clarification";
   message: string;
-  hidden_draft_matches: number;
   hits: SearchHit[];
 }
 

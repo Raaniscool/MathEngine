@@ -4,7 +4,8 @@ One concept per YAML file, stored in knowledge/<subject>/. Every model uses extr
 so a misspelled field name is reported as an error instead of being silently ignored.
 
 Trust levels (field verification.status):
-  ai_draft  - written or proposed by AI, NOT reviewed by a human. Hidden from normal retrieval.
+  ai_draft  - written or proposed by AI, NOT reviewed by a human. Never written to the authoritative
+              index; it appears only in the developer preview index, on explicit request.
   reviewed  - checked by a human reviewer. Exercise answers are still machine-checked on every build.
   verified  - reviewed AND every exercise has a machine-checkable answer (no 'none' checks).
 """

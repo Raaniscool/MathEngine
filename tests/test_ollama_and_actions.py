@@ -147,9 +147,16 @@ def test_navigation_actions_return_view_intents(ctx):
     assert PUBLISHED in subject["data"]["concept_ids"]
 
 
-def test_actions_refuse_hidden_drafts(store, data_dir):
+def test_actions_cannot_reach_drafts(authoritative_store, data_dir):
+    """The assistant runs on the authoritative index, which contains no drafts at all."""
     progress = ProgressStore(data_dir / "user" / "progress.sqlite")
-    draft_ctx = ActionContext(store=store, retriever=Retriever(store), exercises=ExerciseService(store, progress))
-    result = execute_action("open_lesson", {"concept_id": "calculus.derivatives.power-rule"}, draft_ctx)
+    ctx = ActionContext(
+        store=authoritative_store,
+        retriever=Retriever(authoritative_store),
+        exercises=ExerciseService(authoritative_store, progress),
+    )
+    result = execute_action("open_lesson", {"concept_id": "calculus.derivatives.power-rule"}, ctx)
     assert result["ok"] is False
-    assert "unreviewed AI draft" in result["error"]
+    assert "calculus.derivatives.power-rule" in result["error"]
+    search = execute_action("search_concepts", {"query": "power rule"}, ctx)
+    assert "draft" not in str(search).lower()

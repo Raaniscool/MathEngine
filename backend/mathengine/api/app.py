@@ -30,30 +30,44 @@ class AppState:
     settings: Settings
     progress: ProgressStore
     ollama: OllamaClient
-    store: KnowledgeStore | None = None
+    store: KnowledgeStore | None = None  # authoritative: reviewed and verified records only
     store_error: str | None = None
+    dev_store: KnowledgeStore | None = None  # developer preview: includes unreviewed drafts
+    dev_store_error: str | None = None
 
     def __post_init__(self) -> None:
         self.reload_knowledge()
 
     def reload_knowledge(self) -> None:
-        """(Re)open the knowledge index. Safe to call after `cli build-index`."""
+        """(Re)open both indexes. Safe to call after `cli build-index`."""
         try:
             self.store = KnowledgeStore.open(self.settings.index_path)
             self.store_error = None
         except IndexNotBuiltError as exc:
             self.store = None
             self.store_error = str(exc)
+        try:
+            self.dev_store = KnowledgeStore.open(self.settings.dev_index_path, expect_drafts=True)
+            self.dev_store_error = None
+        except IndexNotBuiltError as exc:
+            self.dev_store = None
+            self.dev_store_error = str(exc)
 
-    def knowledge(self) -> KnowledgeStore:
+    def knowledge(self, include_drafts: bool = False) -> KnowledgeStore:
+        """The store to read from. Drafts come only from the developer preview index, and only on request."""
+        if include_drafts:
+            if self.dev_store is None:
+                raise IndexNotBuiltError(self.dev_store_error or "The developer preview index is not available.")
+            return self.dev_store
         if self.store is None:
             raise IndexNotBuiltError(self.store_error or "The knowledge index is not available.")
         return self.store
 
-    def exercises(self) -> ExerciseService:
-        return ExerciseService(self.knowledge(), self.progress)
+    def exercises(self, include_drafts: bool = False) -> ExerciseService:
+        return ExerciseService(self.knowledge(include_drafts), self.progress)
 
     def action_context(self) -> ActionContext:
+        """Assistant actions always use the authoritative index, so they can never see drafts."""
         store = self.knowledge()
         return ActionContext(store=store, retriever=Retriever(store), exercises=ExerciseService(store, self.progress))
 

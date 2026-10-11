@@ -15,14 +15,14 @@ describe("StatusBar", () => {
   it("shows Ollama's missing-model advice", () => {
     const html = renderToStaticMarkup(
       <StatusBar
-        health={{ status: "ok", app: "MathEngine", version: "0.1.0", knowledge: { index_built: true, concept_count: 3, draft_count: 0, error: null } }}
+        health={{ status: "ok", app: "MathEngine", version: "0.1.0", knowledge: { index_built: true, concept_count: 3, excluded_draft_count: 0, developer_preview_built: true, error: null } }}
         healthError={null}
         ollama={{ reachable: true, model: "qwen2.5:1.5b", model_installed: false, installed_models: [], error: "Model 'qwen2.5:1.5b' is not installed. Run: ollama pull qwen2.5:1.5b" }}
         ollamaError={null}
       />,
     );
     expect(html).toContain("ollama pull qwen2.5:1.5b");
-    expect(html).toContain("3 published, 0 draft");
+    expect(html).toContain("3 reviewed concept(s)");
   });
 });
 

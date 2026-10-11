@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ..errors import IndexNotBuiltError, NotFoundError
+from .index import DRAFT_CONTENT_INCLUDED
 from .models import SUBJECTS, Concept
 
 
@@ -42,7 +43,12 @@ class KnowledgeStore:
         self.meta = meta
 
     @classmethod
-    def open(cls, index_path: Path) -> KnowledgeStore:
+    def open(cls, index_path: Path, *, expect_drafts: bool = False) -> KnowledgeStore:
+        """Open a built index read-only.
+
+        expect_drafts=False opens the authoritative index, and refuses any file that contains drafts.
+        expect_drafts=True opens the developer preview index, and refuses any file that lacks them.
+        """
         if not index_path.is_file():
             raise IndexNotBuiltError(
                 f"The knowledge index was not found at {index_path}. "
@@ -52,6 +58,18 @@ class KnowledgeStore:
         connection = sqlite3.connect(uri, uri=True)
         try:
             meta = dict(connection.execute("SELECT key, value FROM meta"))
+            if "draft_content" not in meta:
+                raise IndexNotBuiltError(
+                    f"The index at {index_path} was built by an older version. "
+                    "Run: python -m mathengine.cli build-index"
+                )
+            contains = meta["draft_content"] == DRAFT_CONTENT_INCLUDED
+            if contains != expect_drafts:
+                wanted = "developer preview" if expect_drafts else "authoritative"
+                raise IndexNotBuiltError(
+                    f"The index at {index_path} is not the {wanted} index. "
+                    "Run: python -m mathengine.cli build-index"
+                )
             concepts: dict[str, Concept] = {}
             draft_ids: set[str] = set()
             for concept_id, is_draft, record_json in connection.execute(

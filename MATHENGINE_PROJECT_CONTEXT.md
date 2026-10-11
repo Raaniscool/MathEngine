@@ -20,8 +20,7 @@ These come from the project spec. Do not weaken them without an explicit decisio
    objects, or it is rejected.
 3. **Ollama is non-authoritative.** Local AI may help phrase text. It never decides whether an answer is
    correct and never becomes knowledge by itself.
-4. **Unverified AI content must never enter the authoritative index.** See section 8. This rule is not yet
-   fully met; the gap is recorded there and needs a decision.
+4. **Unverified AI content must never enter the authoritative index.** Met. See section 8.
 5. **User progress is separate from the rebuildable index.** Progress lives in `data/user/progress.sqlite`.
    Rebuilding the index (`data/generated/knowledge.sqlite`) cannot delete progress.
 6. **Stable IDs.** Concept IDs (for example `arithmetic.multiplication.facts`) and exercise IDs
@@ -50,7 +49,7 @@ backend/
       models.py                 Pydantic schema for records (extra="forbid")
       loader.py                 Four-layer validation (section 5)
       index.py                  Builds the generated SQLite index atomically
-      store.py                  Read-only in-memory view of the index; enforces draft visibility
+      store.py                  Read-only in-memory view of an index; refuses the wrong kind of index
       retrieval.py              Term-based search with four explicit outcomes (section 6)
       views.py                  Shapes concept data for API responses (hides answers and hints)
       text.py                   Text normalisation for search
@@ -123,7 +122,8 @@ Every model uses `extra="forbid"`, so a misspelled field is an error, not a sile
 
 ### 5.2 Trust levels
 
-- `ai_draft`: written or proposed by AI and not reviewed by a person. Hidden from normal use.
+- `ai_draft`: written or proposed by AI and not reviewed by a person. Never written to the authoritative
+  index. It appears only in the developer preview index, on explicit request.
 - `reviewed`: checked by a human. Exercise answers are still machine-checked on every build.
 - `verified`: reviewed, and every exercise has a machine-checkable answer (no `none` checks).
 
@@ -138,7 +138,8 @@ Four layers. Any error stops an index build, so a bad record can never replace a
 
 ### 5.4 Seed content
 
-Five records, all `ai_draft`, all valid:
+Five records, all `ai_draft`, all valid. Because none is reviewed, the authoritative index is empty and the
+student-facing library has no lessons yet:
 
 - `arithmetic.multiplication.facts`: multiplication facts (difficulty 2), with exercises
   `seven-times-eight`, `eight-times-nine`, and `simplify-with-y`
@@ -151,9 +152,14 @@ These are schema examples. They are not reviewed teaching content.
 
 ## 6. Index and retrieval
 
-`knowledge/index.py` writes `data/generated/knowledge.sqlite` to a temporary file and replaces the old one
-only after success. It refuses to build when validation fails. The index holds concepts, term rows, and
-index metadata. It never holds user progress.
+`knowledge/index.py` writes two files, each to a temporary file that replaces the old one only after success:
+
+- `data/generated/knowledge.sqlite`: the **authoritative** index. Reviewed and verified records only.
+- `data/generated/knowledge-dev.sqlite`: the **developer preview** index. All records, drafts included. Opened
+  only when a request asks for drafts.
+
+Both refuse to build when validation fails. The authoritative build also refuses when a reviewed record links
+to a draft (section 8). Indexes hold concepts, term rows, and metadata. They never hold user progress.
 
 `knowledge/store.py` opens the index once and keeps it in memory. It keeps the file closed while the app
 runs, which matters on Windows, where a file cannot be replaced while open. After a rebuild, restart the
@@ -161,7 +167,7 @@ backend or call `POST /api/knowledge/reload`.
 
 `knowledge/retrieval.py` finds concepts for a free-text request. Terms are looked up in the index and scored
 by where they matched: title, then alias, keyword, topic, and body. It returns one of four outcomes and never
-guesses silently:
+guesses silently. Search results contain no information about drafts:
 
 - `matches`: one or more concepts clearly match
 - `ambiguous`: several match about equally well. The UI asks the user to choose.
@@ -176,7 +182,7 @@ Base: `http://127.0.0.1:8000/api`. Local only.
 
 | Method | Path | Notes |
 |--------|------|-------|
-| GET | `/health` | Status, version, index state, concept and draft counts |
+| GET | `/health` | Status, version, index state, reviewed concept count, excluded draft count, whether the developer preview index exists |
 | GET | `/ollama/status` | Whether Ollama is reachable and the configured model is installed |
 | GET | `/subjects` | Subjects with concept counts |
 | GET | `/concepts?q=&subject=&include_drafts=` | Search |
@@ -188,26 +194,33 @@ Base: `http://127.0.0.1:8000/api`. Local only.
 | GET | `/actions`, POST `/actions/{name}` | Allowlisted actions for the assistant. Not exposed to the desktop app |
 | POST | `/knowledge/reload` | Reopen the index after a rebuild. Not exposed to the desktop app |
 
-`include_drafts` defaults to `false`. A draft concept returns 404 without it. Check and hint requests
-for drafts need it too.
+`include_drafts` defaults to `false`. Without it, reads and checks use only the authoritative index, so a draft
+concept returns 404. With `include_drafts=true`, they use the developer preview index. If that index has not
+been built, the response is 503 with the rebuild instruction. Search results never mention drafts.
 
-## 8. Known gap: drafts are in the generated index
+## 8. Draft handling (decided)
 
-**Spec rule 4 says unverified AI content must never enter the authoritative index. The current build does
-not fully meet it.** Draft records are written into `data/generated/knowledge.sqlite` with `is_draft = 1`.
-Normal search, concept lookup, and checks hide them, and developer mode can show them. So drafts are
-present in the index file, behind a flag.
+Rule 4 is met. The authoritative index (`data/generated/knowledge.sqlite`) never contains unreviewed AI
+content. The build enforces this three ways:
 
-Options to decide:
+1. **Exclusion.** The authoritative build writes reviewed and verified records only. A test checks that
+   draft IDs and titles do not appear anywhere in the file's bytes.
+2. **Refusal on links.** A reviewed record that lists a draft as a prerequisite or related concept makes the
+   authoritative build fail. The student-facing index would otherwise point at content it does not contain.
+3. **Refusal on the wrong file.** Each index stores `draft_content` (`excluded` or `included`). The store
+   refuses to open the authoritative file as a preview, or the preview file as authoritative. An index from
+   an older build, with no `draft_content` key, is refused as well.
 
-1. **Exclude drafts from the index.** Drafts stay only in `knowledge/` (version-controlled, reviewed by
-   PR). Developer preview reads drafts through the loader. This meets the rule as written. It needs a
-   rework of retrieval and of the draft tests.
-2. **Keep the current flag-based design and amend the rule.** Drafts are allowed in the index only as
-   hidden, labelled records. The owner must accept that as the meaning of "authoritative."
+Drafts are previewed through a separate **developer preview index** (`data/generated/knowledge-dev.sqlite`). It
+holds every record, is opened only when a request sets `include_drafts=true`, and is labelled as
+non-authoritative in its metadata. The assistant runs only on the authoritative index. Search results never
+report how many drafts exist.
 
-Until this is decided, treat the generated index as containing hidden drafts, and do not ship reviewed
-content through a path that depends on the flag.
+Consequence: until a reviewer approves a record, the student-facing library is empty. This is intended. The
+project does not mark drafts as reviewed to fill it.
+
+Note on the earlier design: the first milestone 1 build wrote drafts into the authoritative file behind a flag.
+That was a spec violation and has been replaced by the scheme above.
 
 ## 9. Desktop app
 
@@ -236,10 +249,10 @@ Last run on the working branch (commands in `README.md`):
 
 | Check | Result |
 |-------|--------|
-| `pytest` (backend and API) | 144 passed, 1 non-failing warning from the Starlette/httpx test client |
-| `validate` and `build-index` | 5 records valid; index built with 5 concepts (all drafts, hidden), 201 term rows |
+| `pytest` (backend and API) | 150 passed, 1 non-failing warning from the Starlette/httpx test client |
+| `validate` and `build-index` | 5 records valid. Authoritative index: 0 reviewed concepts, 5 drafts excluded. Developer preview index: 5 concepts, all drafts |
 | Desktop `typecheck` | passes |
-| Desktop `vitest` | 49 tests pass, including live-backend UI and integration tests against the running backend |
+| Desktop `vitest` | 49 tests pass, including UI tests against the running backend (none skipped) |
 | Desktop `electron-vite build` | passes. Output in `desktop/out/` |
 
 Tests cover schema rejection of bad records, loader and structure validation, retrieval outcomes, checker
@@ -267,12 +280,11 @@ allowlisted actions, the route allowlist, and the React UI against the real back
 
 **Milestone 2: content pipeline and review.**
 
-1. Decide section 8 (draft handling in the index).
-2. Add a review workflow: a CLI command or PR template that promotes a record from `ai_draft` to
-   `reviewed`, and checks that every exercise has a machine check.
-3. Add a small set of reviewed multiplication and physics records, written and checked by a person, with
-   the physics content using SymPy units or formulas where practical.
-4. Add a progress view in the desktop app that reads `/progress/summary`.
-5. Test the Electron app manually on Windows and record the result here.
+1. Add a review workflow: a CLI command or PR template that promotes a record from `ai_draft` to
+   `reviewed`, and checks that every exercise has a machine check. Promotion must be a human decision and
+   must record who reviewed it.
+2. Add a small set of reviewed multiplication and physics records, written and checked by a person.
+3. Add a progress view in the desktop app that reads `/progress/summary`.
+4. Test the Electron app manually on Windows and record the result here.
 
 Milestone 2 starts only after milestone 1 is accepted.

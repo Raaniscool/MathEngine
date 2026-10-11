@@ -50,8 +50,10 @@ describe.skipIf(!running)("App against the running backend", () => {
 
     fireEvent.change(screen.getByLabelText("Search the knowledge library"), { target: { value: "times tables" } });
     fireEvent.click(screen.getByText("Search"));
-    await waitFor(() => expect(screen.getByText(/unreviewed AI draft\(s\) match/)).toBeTruthy());
+    const message = await screen.findByText(/No reviewed material matches/);
     expect(screen.queryByText("Multiplication facts")).toBeNull();
+    // The search result never tells a student that drafts exist.
+    expect(message.textContent).not.toMatch(/draft/i);
   });
 
   it("opens a draft lesson in developer mode and checks an answer with the math engine", async () => {
