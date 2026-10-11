@@ -1,0 +1,104 @@
+schema_version: 1
+id: algebra.expressions.distributive
+title: The distributive property
+aliases:
+  - distributive law
+  - expanding brackets
+  - expanding parentheses
+  - factoring out a common factor
+keywords:
+  - distributive
+  - distribute
+  - expand
+  - brackets
+  - parentheses
+  - factor
+  - common factor
+subject: algebra
+topic: expressions
+subtopic: distributive
+difficulty: 4
+summary: Multiply the outside factor by every term inside the brackets; factoring reverses this.
+definition: >-
+  The distributive property says that a(b + c) = ab + ac, and a(b - c) = ab - ac. Multiply the outside factor by each term inside the brackets. Factoring reverses the process: 6x + 9 = 3(2x + 3), where 3 is the common factor.
+prerequisites:
+  - algebra.expressions.evaluate
+  - arithmetic.integers.multiply-divide
+related:
+  - algebra.expressions.like-terms
+formulas:
+  - name: Distributive property
+    expression: a*(b+c)
+    result: a*b + a*c
+    variables:
+      - symbol: a
+        meaning: the outside factor
+      - symbol: b
+        meaning: the first term inside the brackets
+      - symbol: c
+        meaning: the second term inside the brackets
+explanations:
+  - level: intro
+    text: >-
+      Three groups of (2 apples and 5 pears) contain 3 times 2 apples and 3 times 5 pears. Expanding a bracket works the same way.
+  - level: standard
+    text: >-
+      Check an expansion by substituting a value. With x = 4, 3(2x - 5) = 3 x 3 = 9, and 6x - 15 = 24 - 15 = 9. The two expressions agree.
+worked_examples:
+  - title: Expanding with a negative term
+    problem: Expand 3(2x - 5).
+    steps:
+      - Multiply 3 by each term inside the brackets. 3 x 2x = 6x and 3 x (-5) = -15.
+      - Check with x equal to 4.
+      - 3 * (2*4 - 5) = 6*4 - 15 = 9
+    answer: 6x - 15
+exercises:
+  - id: expand-four-times-x-plus-three
+    prompt: Expand 4(x + 3).
+    answer_type: expression
+    check:
+      method: symbolic_equivalence
+      expected: 4*x + 12
+    hints:
+      - Multiply 4 by x and by 3.
+    feedback_correct: Correct. 4(x + 3) = 4x + 12.
+    feedback_incorrect: The 4 must multiply both x and 3.
+  - id: expand-negative-two-times-bracket
+    prompt: Expand -2(3a - 4b).
+    answer_type: expression
+    check:
+      method: symbolic_equivalence
+      expected: -6*a + 8*b
+    hints:
+      - Multiply -2 by 3a, then by -4b. Remember that -2 times -4 is 8.
+    feedback_correct: Correct. -6a + 8b.
+    feedback_incorrect: Multiply the outside factor by each term, paying attention to the signs.
+  - id: factor-six-x-plus-nine
+    prompt: Factor out the common factor from 6x + 9.
+    answer_type: expression
+    check:
+      method: symbolic_equivalence
+      expected: 3*(2*x + 3)
+    hints:
+      - 3 divides both 6 and 9.
+    feedback_correct: Correct. 6x + 9 = 3(2x + 3).
+    feedback_incorrect: Find the largest number that divides both 6 and 9, and write it outside the brackets.
+misconceptions:
+  - description: Forgetting to multiply every term, so 2(x + 3) = 2x + 3.
+    explanation: The outside factor multiplies every term inside the brackets, not just the first.
+    correction: 2(x + 3) = 2x + 6.
+  - description: Believing that a(b + c) = ab + c.
+    explanation: The outside factor multiplies both terms. Adding the outside factor to only one term is wrong.
+    correction: 3(4 + 5) = 27, and 3 x 4 + 3 x 5 = 27. The expansion must multiply both.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 6, 6.EE.A.3 (apply the distributive property to generate equivalent expressions)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

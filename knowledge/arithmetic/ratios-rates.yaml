@@ -1,0 +1,93 @@
+schema_version: 1
+id: arithmetic.ratios.basics
+title: Ratios and rates
+aliases:
+  - ratio
+  - ratios
+  - rate
+  - unit rate
+  - proportion
+keywords:
+  - ratio
+  - rate
+  - unit rate
+  - per
+  - proportion
+  - compare
+  - speed
+subject: arithmetic
+topic: ratios
+subtopic: basics
+difficulty: 4
+summary: A ratio compares two quantities of the same kind; a rate compares quantities with different units.
+definition: >-
+  A ratio compares two quantities of the same kind, written a to b or a:b. Multiplying or dividing both parts by the same nonzero number gives an equivalent ratio. A rate compares quantities with different units, such as 150 km in 2 hours. A unit rate has 1 in the denominator, such as 75 km per hour.
+prerequisites:
+  - arithmetic.fractions.equivalent
+  - arithmetic.division.basics
+related:
+  - arithmetic.percentages.basics
+explanations:
+  - level: intro
+    text: >-
+      A recipe with 2 cups of flour and 3 cups of milk has the ratio 2 to 3. Doubling the recipe gives 4 to 6, which is the same ratio.
+  - level: standard
+    text: >-
+      To scale a ratio, find how many times the known part fits, and apply the same factor to the other part. For flour to milk 2:3, and 10 cups of flour, the factor is 5, so the milk is 3 x 5 = 15 cups.
+worked_examples:
+  - title: Scaling a ratio
+    problem: A recipe uses 2 cups of flour for every 3 cups of milk. How much milk is needed for 10 cups of flour?
+    steps:
+      - The milk is 3/2 of the flour, since 3 cups of milk go with 2 cups of flour.
+      - 10 * 3 / 2 = 15
+    answer: "15"
+exercises:
+  - id: simplify-twelve-to-eighteen
+    prompt: Write the ratio 12 to 18 as a fraction in lowest terms.
+    answer_type: expression
+    check:
+      method: symbolic_equivalence
+      expected: 2/3
+    hints:
+      - Divide both parts by their greatest common factor, 6.
+    feedback_correct: Correct. 12:18 = 2:3, which is the fraction 2/3.
+    feedback_incorrect: Divide both 12 and 18 by 6.
+  - id: car-speed
+    prompt: A car travels 150 km in 2 hours. What is its speed in km per hour?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "75"
+    hints:
+      - A unit rate divides the distance by the time.
+    feedback_correct: Correct. 150 / 2 = 75 km per hour.
+    feedback_incorrect: Divide the distance by the time.
+  - id: boys-and-girls
+    prompt: The ratio of boys to girls is 3 to 5, and there are 24 students in total. How many boys are there?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "9"
+    hints:
+      - The ratio has 3 + 5 = 8 parts. Each part is 24 / 8 students.
+    feedback_correct: Correct. Each part is 3 students, so there are 3 x 3 = 9 boys.
+    feedback_incorrect: Find the total number of parts first, then the size of one part.
+misconceptions:
+  - description: Treating the ratio 3 to 5 as a difference, so there are 2 more girls than boys.
+    explanation: A ratio compares amounts in a fixed proportion. The difference between the parts depends on how many groups there are.
+    correction: For every 3 boys there are 5 girls. With 24 students there are 8 parts, so 9 boys and 15 girls.
+  - description: Mixing up the order of the parts, such as writing boys to girls as 5 to 3.
+    explanation: The order in a ratio follows the words in the question.
+    correction: Write the quantities in the order they are named in the question.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 6, 6.RP.A.1 (understand the concept of a ratio)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

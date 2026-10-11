@@ -1,0 +1,97 @@
+schema_version: 1
+id: arithmetic.subtraction.whole-numbers
+title: Subtracting whole numbers with borrowing
+aliases:
+  - subtracting whole numbers
+  - subtraction with borrowing
+  - borrowing in subtraction
+  - regrouping subtraction
+keywords:
+  - subtract
+  - subtraction
+  - difference
+  - minus
+  - take away
+  - borrow
+  - regroup
+subject: arithmetic
+topic: subtraction
+subtopic: whole-numbers
+difficulty: 2
+summary: Subtract column by column, borrowing one ten from the next column when the top digit is smaller.
+definition: >-
+  Subtraction finds the difference between two amounts, or how much is left after taking one away. Subtract
+  the ones first. If the top digit is smaller, borrow one ten from the next column to the left, which
+  makes ten more ones, and then subtract.
+prerequisites:
+  - arithmetic.counting.place-value
+  - arithmetic.addition.whole-numbers
+related:
+  - arithmetic.addition.whole-numbers
+explanations:
+  - level: intro
+    text: >-
+      If the top digit is smaller than the bottom digit in a column, borrow 1 from the column to the left.
+      That 1 is worth ten in the current column.
+  - level: standard
+    text: >-
+      Check any subtraction with addition: if a - b = c, then c + b = a. For 412 - 165 = 247, check that
+      247 + 165 = 412.
+worked_examples:
+  - title: Subtraction that borrows across a zero
+    problem: Find 703 - 268.
+    steps:
+      - 703 = 600 + 90 + 13, because 1 hundred is exchanged for 10 tens and 1 ten for 10 ones.
+      - 13 - 8 = 5
+      - 9 - 6 = 3
+      - 6 - 2 = 4
+      - 703 - 268 = 435
+    answer: "435"
+exercises:
+  - id: four-twelve-minus-one-sixty-five
+    prompt: What is 412 - 165?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "247"
+    hints:
+      - In the ones column 2 is smaller than 5, so borrow 1 ten from the tens column.
+      - After borrowing, the ones are 12 and the tens are 0. Then 12 - 5 = 7.
+    feedback_correct: Correct. 412 - 165 = 247.
+    feedback_incorrect: Borrow a ten from the tens column, subtract the ones, then the tens, then the hundreds.
+  - id: nine-hundred-minus-three-eighty-six
+    prompt: What is 900 - 386?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "514"
+    hints:
+      - "Borrow across the zeros: 900 can be written as 8 hundreds, 9 tens and 10 ones."
+    feedback_correct: Correct. 900 - 386 = 514.
+    feedback_incorrect: Borrow across the zeros, then subtract the ones, the tens and the hundreds in turn.
+  - id: one-thousand-minus-four-fifty-seven
+    prompt: What is 1000 - 457?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "543"
+    hints:
+      - Check your answer by adding 457 to it. The sum must be 1000.
+    feedback_correct: Correct. 457 + 543 = 1000.
+    feedback_incorrect: Subtract column by column, borrowing across the zeros, then check by addition.
+misconceptions:
+  - description: Subtracting the smaller digit from the larger in each column, whatever the order.
+    explanation: For 52 - 27 this gives 5 - 2 = 3 and 7 - 2 = 5, which is 35. The correct answer is smaller.
+    correction: "52 - 27 = 25. Borrow a ten from the tens column so that 12 - 7 = 5. Check: 25 + 27 = 52."
+sources:
+  - title: Common Core State Standards for Mathematics, grade 2, 2.NBT.B.7 (add and subtract within 1000 using place value)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

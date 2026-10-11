@@ -1,0 +1,96 @@
+schema_version: 1
+id: arithmetic.number-theory.multiples
+title: Multiples and the least common multiple
+aliases:
+  - multiples
+  - multiples of a number
+  - least common multiple
+  - common multiple
+  - lcm
+keywords:
+  - multiple
+  - multiples
+  - least common multiple
+  - LCM
+  - common multiple
+  - skip counting
+subject: arithmetic
+topic: number-theory
+subtopic: multiples
+difficulty: 3
+summary: A multiple of n is n times a whole number; the least common multiple is the smallest multiple shared by two numbers.
+definition: >-
+  A multiple of a number n is n times a whole number: 0, n, 2n, 3n and so on. The multiples of 4 are 0, 4,
+  8, 12 and so on. A common multiple of two numbers is a multiple of both. The least common multiple (LCM)
+  is the smallest positive common multiple.
+prerequisites:
+  - arithmetic.multiplication.facts
+related:
+  - arithmetic.number-theory.factors
+  - arithmetic.fractions.add-subtract
+explanations:
+  - level: intro
+    text: >-
+      Multiples are the numbers you say when you skip count: the multiples of 3 are 3, 6, 9, 12 and so on.
+  - level: standard
+    text: >-
+      To find the LCM of 4 and 6, list the multiples of each and find the first one in both lists. Multiples of 4 are 4, 8, 12, 16. Multiples of 6 are 6, 12, 18. The first match is 12.
+worked_examples:
+  - title: LCM of 4 and 6
+    problem: Find the least common multiple of 4 and 6.
+    steps:
+      - Multiples of 4 are 4, 8, 12, 16 and so on.
+      - Multiples of 6 are 6, 12, 18 and so on.
+      - The first number in both lists is 12.
+      - 4 x 3 = 12 = 6 x 2
+    answer: "12"
+exercises:
+  - id: sixth-multiple-of-seven
+    prompt: What is the 6th multiple of 7?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "42"
+    hints:
+      - The 6th multiple is 6 x 7.
+    feedback_correct: Correct. 6 x 7 = 42.
+    feedback_incorrect: The nth multiple of 7 is n x 7.
+  - id: lcm-of-three-and-five
+    prompt: What is the least common multiple of 3 and 5?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "15"
+    hints:
+      - Since 3 and 5 share no factor other than 1, the LCM is their product.
+    feedback_correct: Correct. 3 and 5 have no common factor, so the LCM is 3 x 5 = 15.
+    feedback_incorrect: List the multiples of 3 and of 5 and find the first match.
+  - id: lcm-of-eight-and-twelve
+    prompt: What is the least common multiple of 8 and 12?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "24"
+    hints:
+      - Multiples of 8 are 8, 16, 24. Multiples of 12 are 12, 24.
+    feedback_correct: Correct. 24 is the first multiple shared by 8 and 12.
+    feedback_incorrect: List the multiples of 8 and of 12 until a number appears in both lists.
+misconceptions:
+  - description: Confusing multiples with factors.
+    explanation: The factors of 12 are the numbers that divide 12. The multiples of 12 are numbers that 12 divides into.
+    correction: The factors of 12 are 1, 2, 3, 4, 6 and 12. The multiples of 12 are 12, 24, 36 and so on.
+  - description: Believing that a multiple must be smaller than the number.
+    explanation: Multiples grow without limit, because you keep multiplying by larger whole numbers.
+    correction: The multiples of 5 are 5, 10, 15, 20 and so on, with no largest one.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 4, 4.OA.B.4 (find multiples of a given whole number)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

@@ -1,0 +1,95 @@
+schema_version: 1
+id: arithmetic.integers.add-subtract
+title: Adding and subtracting integers
+aliases:
+  - adding negative numbers
+  - subtracting negative numbers
+  - integers
+  - negative numbers
+  - adding integers
+keywords:
+  - integer
+  - negative
+  - positive
+  - opposite
+  - number line
+  - add
+  - subtract
+  - sum
+  - difference
+subject: arithmetic
+topic: integers
+subtopic: add-subtract
+difficulty: 4
+summary: Integers are whole numbers and their negatives; adding a negative moves left on the number line.
+definition: >-
+  Integers are the whole numbers and their negatives: ..., -2, -1, 0, 1, 2, .... A number and its opposite add to zero. Adding a negative number moves left on the number line, and subtracting a number is the same as adding its opposite. For example, 3 + (-5) = -2 and 3 - 5 = -2.
+prerequisites:
+  - arithmetic.addition.whole-numbers
+  - arithmetic.subtraction.whole-numbers
+related:
+  - arithmetic.integers.multiply-divide
+explanations:
+  - level: intro
+    text: >-
+      Think of a thermometer. Starting at 3 degrees, a drop of 5 degrees leads to -2 degrees.
+  - level: standard
+    text: >-
+      Adding two negatives adds their sizes and keeps the minus sign: -4 + (-3) = -7. Adding numbers with different signs subtracts the smaller size from the larger and keeps the sign of the larger size: -7 + 4 = -3 and 7 + (-4) = 3.
+worked_examples:
+  - title: Adding a positive and a negative
+    problem: Find -6 + 9.
+    steps:
+      - The signs differ, so subtract 6 from 9 to get 3, and keep the sign of 9, which is positive.
+      - -6 + 9 = 3
+    answer: "3"
+exercises:
+  - id: negative-eight-plus-three
+    prompt: What is -8 + 3?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "-5"
+    hints:
+      - Start at -8 and move 3 steps right on the number line.
+    feedback_correct: Correct. -8 + 3 = -5.
+    feedback_incorrect: Adding a positive number moves right. Count 3 steps to the right of -8.
+  - id: four-minus-nine
+    prompt: What is 4 - 9?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "-5"
+    hints:
+      - Subtracting 9 is the same as adding -9.
+    feedback_correct: Correct. 4 + (-9) = -5.
+    feedback_incorrect: Subtracting 9 from 4 goes 9 steps left from 4.
+  - id: negative-seven-minus-negative-two
+    prompt: What is -7 - (-2)?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "-5"
+    hints:
+      - Subtracting -2 is the same as adding 2.
+    feedback_correct: Correct. -7 - (-2) = -7 + 2 = -5.
+    feedback_incorrect: Subtracting a negative is the same as adding its opposite.
+misconceptions:
+  - description: Believing that -5 is larger than -2 because 5 is larger than 2.
+    explanation: With negative numbers the size is measured away from zero, so a bigger size means a smaller number.
+    correction: On the number line, -2 lies to the right of -5, so -2 is greater than -5.
+  - description: Believing that subtracting a negative makes the result more negative.
+    explanation: Subtracting a negative removes a debt, which makes the result bigger.
+    correction: 5 - (-3) = 5 + 3 = 8.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 7, 7.NS.A.1 (add and subtract rational numbers)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

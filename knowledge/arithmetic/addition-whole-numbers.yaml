@@ -1,0 +1,95 @@
+schema_version: 1
+id: arithmetic.addition.whole-numbers
+title: Adding whole numbers with carrying
+aliases:
+  - adding whole numbers
+  - addition with carrying
+  - carrying in addition
+  - column addition
+keywords:
+  - add
+  - addition
+  - sum
+  - plus
+  - carry
+  - carrying
+  - regrouping
+  - total
+subject: arithmetic
+topic: addition
+subtopic: whole-numbers
+difficulty: 2
+summary: Add the digits in each place value column, carrying a ten to the next column when needed.
+definition: >-
+  Addition combines amounts into a total called the sum. For larger numbers, add the digits in each
+  place value column, starting with the ones. When a column adds to ten or more, write the ones digit
+  and carry one ten into the next column to the left.
+prerequisites:
+  - arithmetic.counting.place-value
+related:
+  - arithmetic.subtraction.whole-numbers
+explanations:
+  - level: intro
+    text: >-
+      Add the ones first. If the ones make ten or more, write the ones digit and carry 1 to the tens column.
+  - level: standard
+    text: >-
+      Adding by place value splits both numbers into hundreds, tens and ones. For 46 + 27, add 40 + 20 = 60
+      and 6 + 7 = 13, then 60 + 13 = 73. The column method does the same steps in less writing.
+worked_examples:
+  - title: Column addition with two carries
+    problem: Find 368 + 257.
+    steps:
+      - "Ones: 8 + 7 = 15. Write 5 and carry 1 ten."
+      - "Tens: 6 + 5 + 1 (carried) = 12. Write 2 and carry 1 hundred."
+      - "Hundreds: 3 + 2 + 1 (carried) = 6. Write 6."
+      - Check by place value. 368 + 257 = 300 + 200 + 60 + 50 + 8 + 7 = 500 + 110 + 15 = 625
+    answer: "625"
+exercises:
+  - id: forty-seven-plus-thirty-six
+    prompt: What is 47 + 36?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "83"
+    hints:
+      - "Add the ones first: 7 + 6 = 13. Write 3 and carry 1 ten."
+      - "Then add the tens, including the carried ten: 4 + 3 + 1 = 8."
+    feedback_correct: Correct. 47 + 36 = 83.
+    feedback_incorrect: Add the ones (7 + 6 = 13), write 3, carry 1, then add the tens with the carried 1.
+  - id: two-eighty-five-plus-one-sixty-nine
+    prompt: What is 285 + 169?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "454"
+    hints:
+      - 5 + 9 = 14, so write 4 and carry 1.
+    feedback_correct: Correct. 285 + 169 = 454.
+    feedback_incorrect: Carry the ten from the ones column, then carry again in the tens column if needed.
+  - id: large-sum-with-carries
+    prompt: What is 1458 + 2761?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "4219"
+    hints:
+      - Work column by column from the right, and carry where a column reaches ten or more.
+    feedback_correct: Correct. 1458 + 2761 = 4219.
+    feedback_incorrect: "Check each column: ones, tens, hundreds, thousands. Carry where needed."
+misconceptions:
+  - description: Adding the digits in each column and forgetting to carry, so 18 + 5 = 13.
+    explanation: 18 + 5 has 8 ones and 5 ones, which is 13 ones. Thirteen ones is one ten and three ones.
+    correction: 18 + 5 = 23. Carry the ten from the ones column into the tens column.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 2, 2.NBT.B.7 (add and subtract within 1000 using place value)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

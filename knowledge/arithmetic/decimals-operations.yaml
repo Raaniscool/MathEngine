@@ -1,0 +1,94 @@
+schema_version: 1
+id: arithmetic.decimals.operations
+title: Adding, subtracting, multiplying and dividing decimals
+aliases:
+  - decimal arithmetic
+  - adding decimals
+  - multiplying decimals
+  - dividing decimals
+keywords:
+  - decimal
+  - decimal point
+  - add
+  - subtract
+  - multiply
+  - divide
+  - align
+  - decimal places
+subject: arithmetic
+topic: decimals
+subtopic: operations
+difficulty: 4
+summary: Line up decimal points to add or subtract; multiply as whole numbers and count decimal places; move points before dividing by a decimal.
+definition: >-
+  To add or subtract decimals, line up the decimal points and compute as whole numbers, writing zeros where needed. To multiply decimals, multiply as whole numbers, then place the decimal point so that the answer has as many decimal places as both factors together. To divide by a decimal, move the decimal point in the divisor to make it a whole number, and move the point in the dividend the same number of places.
+prerequisites:
+  - arithmetic.decimals.place-value
+  - arithmetic.division.long-division
+related:
+  - arithmetic.fractions.multiply
+explanations:
+  - level: intro
+    text: >-
+      Decimals behave like whole numbers in tenths and hundredths. Lining up the decimal points keeps the place values together.
+  - level: standard
+    text: >-
+      For 2.4 x 0.3, the decimal digits behave like 24 x 3 = 72 in tenths times tenths, which gives hundredths. So 2.4 x 0.3 = 0.72.
+worked_examples:
+  - title: Multiplying two decimals
+    problem: Find 2.4 x 0.3.
+    steps:
+      - Ignore the decimal points for now. 24 x 3 = 72.
+      - 2.4 has one decimal place and 0.3 has one, so the answer has two decimal places.
+      - 2.4 x 0.3 = 0.72
+    answer: "0.72"
+exercises:
+  - id: three-point-five-plus-zero-point-seven-six
+    prompt: What is 3.5 + 0.76?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "4.26"
+    hints:
+      - Write 3.5 as 3.50 so both numbers have two decimal places.
+    feedback_correct: Correct. 3.50 + 0.76 = 4.26.
+    feedback_incorrect: Line up the decimal points and add the hundredths first.
+  - id: one-point-two-times-zero-point-four
+    prompt: What is 1.2 x 0.4?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "0.48"
+    hints:
+      - Multiply 12 by 4 first, then place the decimal point.
+    feedback_correct: Correct. 12 x 4 = 48, and there are two decimal places, so 0.48.
+    feedback_incorrect: Count the decimal places in both factors. The answer has the same total.
+  - id: six-point-three-divided-by-zero-point-nine
+    prompt: What is 6.3 divided by 0.9?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "7"
+    hints:
+      - Move both decimal points one place to the right to get 63 divided by 9.
+    feedback_correct: Correct. 63 / 9 = 7.
+    feedback_incorrect: Make the divisor a whole number first by moving both decimal points.
+misconceptions:
+  - description: Lining up the last digits instead of the decimal points.
+    explanation: Matching the last digits puts tenths under hundredths and gives a wrong sum.
+    correction: "Write 3.5 as 3.50 and add: 3.50 + 0.76 = 4.26."
+  - description: Believing that multiplying by a decimal always makes a number bigger.
+    explanation: Multiplying by a decimal less than 1 gives a smaller result.
+    correction: "0.5 x 0.5 = 0.25, because half of a half is a quarter."
+sources:
+  - title: Common Core State Standards for Mathematics, grade 5, 5.NBT.B.7 (add, subtract, multiply and divide decimals to hundredths)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

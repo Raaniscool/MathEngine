@@ -1,0 +1,93 @@
+schema_version: 1
+id: arithmetic.fractions.divide
+title: Dividing fractions
+aliases:
+  - divide fractions
+  - dividing by a fraction
+  - reciprocal
+  - keep change flip
+keywords:
+  - fraction
+  - divide
+  - division
+  - reciprocal
+  - flip
+  - invert
+  - divisor
+  - quotient
+subject: arithmetic
+topic: fractions
+subtopic: divide
+difficulty: 5
+summary: Dividing by a fraction is the same as multiplying by its reciprocal.
+definition: >-
+  Dividing by a fraction is the same as multiplying by its reciprocal: a/b / (c/d) = a/b x d/c, when c is not 0. The reciprocal of c/d is d/c. The answer counts how many pieces of the given size fit into the amount being divided.
+prerequisites:
+  - arithmetic.fractions.multiply
+  - arithmetic.division.basics
+related:
+  - arithmetic.fractions.multiply
+explanations:
+  - level: intro
+    text: >-
+      How many quarter-cup scoops fit into 1 cup? Four, so 1 / (1/4) = 4, which is the same as 1 x 4.
+  - level: standard
+    text: >-
+      To find 3/4 / (1/8), multiply 3/4 by the reciprocal of 1/8, which is 8. That gives 24/4 = 6. Six eighths fit into three quarters.
+worked_examples:
+  - title: Dividing by a fraction with its reciprocal
+    problem: Find 2/3 / (4/5).
+    steps:
+      - The reciprocal of 4/5 is 5/4.
+      - 2/3 / (4/5) = 2/3 * 5/4 = (2 * 5) / (3 * 4) = 10/12 = 5/6
+    answer: 5/6
+exercises:
+  - id: three-quarters-divided-by-three
+    prompt: What is 3/4 divided by 3?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 1/4
+    hints:
+      - Dividing by 3 is the same as multiplying by 1/3.
+    feedback_correct: Correct. 3/4 x 1/3 = 1/4.
+    feedback_incorrect: Multiply 3/4 by the reciprocal of 3, which is 1/3.
+  - id: half-divided-by-quarter
+    prompt: What is 1/2 divided by 1/4?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "2"
+    hints:
+      - The reciprocal of 1/4 is 4.
+    feedback_correct: Correct. 1/2 x 4 = 2.
+    feedback_incorrect: Multiply 1/2 by 4, the reciprocal of 1/4.
+  - id: five-sixths-divided-by-five-thirds
+    prompt: What is 5/6 divided by 5/3?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 1/2
+    hints:
+      - Flip 5/3 to get 3/5, then multiply. Cancel the 5s first.
+    feedback_correct: Correct. 5/6 x 3/5 = 1/2.
+    feedback_incorrect: Multiply by the reciprocal 3/5, then simplify.
+misconceptions:
+  - description: Forgetting to flip the second fraction, so 1/2 divided by 1/4 becomes 1/2 x 1/4 = 1/8.
+    explanation: Dividing by a fraction needs its reciprocal. Multiplying by the fraction itself gives a different answer.
+    correction: "1/2 x 4 = 2. Check: 2 x 1/4 = 1/2."
+  - description: Believing that dividing a fraction always makes it smaller.
+    explanation: Dividing by a fraction less than 1 gives a bigger number, because many small pieces fit.
+    correction: 1/2 divided by 1/4 is 2, which is larger than 1/2.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 6, 6.NS.A.1 (interpret and compute quotients of fractions)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

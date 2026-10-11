@@ -1,0 +1,93 @@
+schema_version: 1
+id: arithmetic.fractions.add-subtract
+title: Adding and subtracting fractions
+aliases:
+  - adding fractions
+  - subtracting fractions
+  - fractions with unlike denominators
+  - common denominator
+keywords:
+  - fraction
+  - add
+  - subtract
+  - sum
+  - difference
+  - common denominator
+  - unlike denominators
+  - least common multiple
+subject: arithmetic
+topic: fractions
+subtopic: add-subtract
+difficulty: 4
+summary: Fractions are added or subtracted directly only with the same denominator; otherwise rewrite them with a common denominator first.
+definition: >-
+  Only pieces of the same size can be counted together. With the same denominator, add or subtract the numerators and keep the denominator: 1/4 + 2/4 = 3/4. With unlike denominators, first rewrite each fraction with a common denominator, usually the least common multiple of the denominators. Never add the denominators.
+prerequisites:
+  - arithmetic.fractions.equivalent
+  - arithmetic.number-theory.multiples
+related:
+  - arithmetic.fractions.multiply
+explanations:
+  - level: intro
+    text: >-
+      Pieces of the same size can be counted together: one quarter plus two quarters is three quarters.
+  - level: standard
+    text: >-
+      For 1/2 + 1/3, the common denominator is 6. Then 1/2 = 3/6 and 1/3 = 2/6, so the sum is 5/6. The denominator is not added, because the size of each piece stays the same.
+worked_examples:
+  - title: Adding fractions with unlike denominators
+    problem: Find 2/3 + 3/4.
+    steps:
+      - The common denominator is 12, so rewrite 2/3 as 8/12 and 3/4 as 9/12.
+      - 2/3 + 3/4 = 8/12 + 9/12 = 17/12
+    answer: 17/12
+exercises:
+  - id: one-sixth-plus-four-sixths
+    prompt: What is 1/6 + 4/6?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 5/6
+    hints:
+      - The denominators are the same, so add only the numerators.
+    feedback_correct: Correct. 1/6 + 4/6 = 5/6.
+    feedback_incorrect: Keep the denominator 6 and add the numerators 1 and 4.
+  - id: three-quarters-minus-one-third
+    prompt: What is 3/4 - 1/3?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 5/12
+    hints:
+      - Use the common denominator 12. 3/4 = 9/12 and 1/3 = 4/12.
+    feedback_correct: Correct. 9/12 - 4/12 = 5/12.
+    feedback_incorrect: Rewrite both fractions with denominator 12 before subtracting.
+  - id: half-plus-two-fifths
+    prompt: What is 1/2 + 2/5?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: 9/10
+    hints:
+      - Use the common denominator 10. 1/2 = 5/10 and 2/5 = 4/10.
+    feedback_correct: Correct. 5/10 + 4/10 = 9/10.
+    feedback_incorrect: Rewrite both fractions with denominator 10 first.
+misconceptions:
+  - description: Adding the denominators, so 1/2 + 1/2 = 2/4.
+    explanation: The denominator names the size of each piece. Two halves make one whole, not two quarters.
+    correction: 1/2 + 1/2 = 2/2 = 1.
+  - description: Subtracting the numerators and the denominators separately, so 3/4 - 1/3 becomes 2/1.
+    explanation: The denominators must match before the numerators can be subtracted. Subtracting the denominators changes the size of the pieces.
+    correction: "Rewrite with a common denominator, then subtract the numerators: 9/12 - 4/12 = 5/12."
+sources:
+  - title: Common Core State Standards for Mathematics, grade 5, 5.NF.A.1 (add and subtract fractions with unlike denominators)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

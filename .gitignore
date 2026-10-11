@@ -1,0 +1,24 @@
+# Python virtual environment and caches
+backend/.venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Desktop (Node/Electron) dependencies and build output
+desktop/node_modules/
+desktop/out/
+node_modules/
+out/
+*.log
+
+# Generated, rebuildable knowledge index. Rebuild with: python -m mathengine.cli build-index
+data/generated/
+
+# User progress. Personal data; never commit it.
+data/user/
+
+# Local environment files
+.env
+.env.*
+!.env.example

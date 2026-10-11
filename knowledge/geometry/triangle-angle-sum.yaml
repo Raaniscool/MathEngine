@@ -1,0 +1,90 @@
+schema_version: 1
+id: geometry.angles.triangle-sum
+title: Angles in a triangle add up to 180 degrees
+aliases:
+  - triangle angle sum
+  - angles of a triangle
+  - missing angle in a triangle
+keywords:
+  - triangle
+  - angle
+  - degrees
+  - interior angle
+  - sum
+  - missing angle
+subject: geometry
+topic: angles
+subtopic: triangles
+difficulty: 4
+summary: The three interior angles of any triangle add up to 180 degrees.
+definition: >-
+  The three interior angles of any triangle add up to 180 degrees. This holds for every triangle. One proof draws a line through one corner parallel to the opposite side; the two alternate angles it creates match the other two angles of the triangle, and together with the third angle they form a straight line of 180 degrees.
+prerequisites:
+  - arithmetic.integers.add-subtract
+related:
+  - arithmetic.operations.order-of-operations
+explanations:
+  - level: intro
+    text: >-
+      Tear off the three corners of a paper triangle and place them side by side. They form a straight line, which is 180 degrees.
+  - level: standard
+    text: >-
+      To find a missing angle, add the two known angles and subtract the total from 180. If two angles are 52 and 71 degrees, the third is 180 - (52 + 71) = 57 degrees.
+worked_examples:
+  - title: Finding a missing angle
+    problem: Two angles of a triangle are 52 degrees and 71 degrees. Find the third angle.
+    steps:
+      - Add the two known angles. 52 + 71 = 123
+      - Subtract from 180. 180 - 123 = 57
+      - 180 - (52 + 71) = 57
+    answer: "57"
+exercises:
+  - id: sixty-and-eighty
+    prompt: Two angles of a triangle are 60 degrees and 80 degrees. What is the third angle?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "40"
+    hints:
+      - The three angles add up to 180 degrees.
+    feedback_correct: Correct. 180 - 60 - 80 = 40.
+    feedback_incorrect: Subtract the two known angles from 180.
+  - id: ninety-and-thirty-five
+    prompt: A triangle has angles of 90 degrees and 35 degrees. What is the third angle?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "55"
+    hints:
+      - Add 90 and 35 first, then subtract from 180.
+    feedback_correct: Correct. 180 - 125 = 55.
+    feedback_incorrect: Add the two known angles and subtract the sum from 180.
+  - id: thirty-and-forty-five
+    prompt: Two angles of a triangle are 30 degrees and 45 degrees. What is the third angle?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "105"
+    hints:
+      - 30 + 45 = 75.
+    feedback_correct: Correct. 180 - 75 = 105.
+    feedback_incorrect: Subtract 75 from 180.
+misconceptions:
+  - description: Believing that the angles of a triangle add up to 360 degrees.
+    explanation: 360 degrees is the total for the angles of a quadrilateral, not a triangle.
+    correction: A triangle's angles add up to 180 degrees, and a quadrilateral's add up to 360 degrees.
+  - description: Believing that the third angle can be found by adding the known angles.
+    explanation: The known angles are only part of the total of 180 degrees.
+    correction: For 60 and 80 the total is 180, so the third angle is 40, not 140.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 7, 7.G.B.5 (use facts about supplementary, complementary, vertical and adjacent angles to write equations for unknown angles)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

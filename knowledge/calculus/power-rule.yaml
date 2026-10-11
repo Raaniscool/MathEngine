@@ -1,0 +1,121 @@
+schema_version: 1
+id: calculus.derivatives.power-rule
+title: Power rule for derivatives
+aliases:
+  - power rule
+  - derivative of x^n
+  - differentiating powers
+keywords:
+  - derivative
+  - differentiate
+  - power
+  - slope
+  - rate of change
+  - calculus
+  - d/dx
+subject: calculus
+topic: derivatives
+subtopic: rules
+difficulty: 5
+summary: If f(x) = x^n for a constant n, then f'(x) = n x^(n-1).
+definition: >-
+  The derivative of a function gives its instantaneous rate of change. For a constant n, the derivative of
+  x^n with respect to x is n x^(n-1), wherever x^n is defined. Multiply by the original exponent, then reduce
+  the exponent by one. A constant coefficient stays in front: the derivative of c f(x) is c f'(x).
+prerequisites:
+  - algebra.exponents.laws
+related:
+  - algebra.exponents.laws
+explanations:
+  - level: intro
+    text: >-
+      A derivative measures how fast an output changes as the input changes. It is the slope of the graph
+      at one point.
+  - level: standard
+    text: >-
+      For f(x) = x^3 the power rule gives f'(x) = 3x^2: bring the exponent 3 down as a multiplier and reduce
+      the exponent to 2. A constant term such as 7 has derivative 0, because a constant never changes.
+  - level: advanced
+    text: >-
+      The power rule follows from the limit definition f'(x) = lim (f(x+h) - f(x)) / h as h approaches 0.
+      For positive whole numbers n, the binomial theorem expands (x+h)^n and leaves n x^(n-1) in the limit.
+      The rule holds for every real exponent n wherever x^n is defined in the usual way; for non-integer n,
+      that usually means x > 0.
+formulas:
+  - name: Power rule
+    expression: n*x^(n-1)
+    conditions:
+      - n is a constant
+      - x^n is defined on the interval considered
+    variables:
+      - symbol: x
+        meaning: input variable
+      - symbol: n
+        meaning: constant exponent
+worked_examples:
+  - title: Differentiating a polynomial term by term
+    problem: Differentiate f(x) = 4x^3 - 2x + 7.
+    steps:
+      - Differentiate each term separately.
+      - 4x^3 gives 4 x 3x^2 = 12x^2.
+      - -2x is -2x^1, which gives -2 x 1 x^0 = -2.
+      - 7 is a constant, so its derivative is 0.
+    answer: f'(x) = 12x^2 - 2
+exercises:
+  - id: power-of-five
+    prompt: Differentiate f(x) = x^5.
+    answer_type: expression
+    check:
+      method: derivative
+      function: x^5
+      variable: x
+      expected: 5*x^4
+    hints:
+      - Bring the exponent 5 down as a multiplier.
+      - Then reduce the exponent by 1.
+    feedback_correct: Correct. The exponent 5 becomes the coefficient, and the new exponent is 4.
+    feedback_incorrect: Multiply by the old exponent, then subtract 1 from the exponent.
+  - id: polynomial-terms
+    prompt: Differentiate f(x) = 3x^4 - x^2 + 6x.
+    answer_type: expression
+    check:
+      method: derivative
+      function: 3*x^4 - x^2 + 6*x
+      variable: x
+      expected: 12*x^3 - 2*x + 6
+    hints:
+      - Differentiate each term separately.
+      - The term 6x is 6x^1, so its derivative is 6.
+    feedback_correct: Correct. Each term was differentiated separately.
+    feedback_incorrect: Check each term one at a time, especially the term 6x.
+  - id: constant-function
+    prompt: Differentiate f(x) = 7.
+    answer_type: expression
+    check:
+      method: derivative
+      function: "7"
+      variable: x
+      expected: "0"
+    hints:
+      - A constant does not change as x changes.
+    feedback_correct: Correct. The derivative of any constant is 0.
+    feedback_incorrect: Think about whether the value of 7 ever changes as x changes.
+misconceptions:
+  - description: Keeping the original exponent, for example d/dx (x^3) = x^3.
+    explanation: The exponent is used to make the multiplier and is then reduced by one.
+    correction: d/dx (x^3) = 3x^2.
+  - description: Applying the power rule to a variable exponent, for example d/dx (2^x) = x 2^(x-1).
+    explanation: The power rule needs a constant exponent. In 2^x the variable is the exponent.
+    correction: 2^x needs a different rule. Its derivative is 2^x ln 2.
+sources:
+  - title: Standard single-variable calculus textbooks, chapter on differentiation rules (power rule)
+    kind: textbook
+provenance:
+  origin: ai_generated
+  author: MathEngine project (seed content)
+  created: 2026-10-11
+  ai_model: Arena coding agent (initial seed content)
+verification:
+  status: ai_draft
+  notes: Seed example written to demonstrate the schema. Needs human review before it is published.
+version: 0.1.0

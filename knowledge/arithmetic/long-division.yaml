@@ -1,0 +1,101 @@
+schema_version: 1
+id: arithmetic.division.long-division
+title: Long division
+aliases:
+  - long division method
+  - division algorithm
+  - written division
+keywords:
+  - long division
+  - divide
+  - quotient
+  - remainder
+  - bring down
+  - multiply
+  - subtract
+  - algorithm
+  - dividend
+  - divisor
+subject: arithmetic
+topic: division
+subtopic: long-division
+difficulty: 4
+summary: A written method for dividing by one digit, repeating divide, multiply, subtract and bring down for each place.
+definition: >-
+  Long division divides a larger number by a one- or two-digit divisor using a written method. For each
+  place value, repeat four steps: divide, multiply, subtract, bring down. When fewer digits remain than the
+  divisor, what is left is the remainder.
+prerequisites:
+  - arithmetic.division.basics
+  - arithmetic.multiplication.facts
+  - arithmetic.subtraction.whole-numbers
+related:
+  - arithmetic.division.basics
+explanations:
+  - level: intro
+    text: >-
+      Long division breaks one big division into small ones. Work from the left digit to the right.
+  - level: standard
+    text: >-
+      For 468 / 4: 4 goes into 4 once, 4 - 4 = 0, bring down 6. 4 goes into 6 once, 6 - 4 = 2, bring down 8.
+      4 goes into 28 seven times, 28 - 28 = 0. The quotient is 117.
+worked_examples:
+  - title: Four-digit dividend, one-digit divisor
+    problem: Find 1284 / 4.
+    steps:
+      - 4 does not go into 1, so use 12. 12 / 4 = 3. Write 3 above the 2. Multiply 3 x 4 = 12. Subtract 12 - 12 = 0.
+      - Bring down 8. 8 / 4 = 2. Multiply 2 x 4 = 8. Subtract 8 - 8 = 0.
+      - Bring down 4. 4 / 4 = 1. Multiply 1 x 4 = 4. Subtract 4 - 4 = 0.
+      - 1284 / 4 = 321
+    answer: "321"
+exercises:
+  - id: nine-thirty-six-over-six
+    prompt: What is 936 / 6?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "156"
+    hints:
+      - Start with 9 / 6 = 1 remainder 3, then bring down the 3 to make 33.
+      - 33 / 6 = 5 remainder 3. Bring down the 6 to make 36, and 36 / 6 = 6.
+    feedback_correct: Correct. 936 / 6 = 156.
+    feedback_incorrect: Work left to right, bringing down one digit at each step.
+  - id: seven-thirty-five-over-five
+    prompt: What is 735 / 5?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "147"
+    hints:
+      - 7 / 5 = 1 remainder 2. Bring down the 3 to make 23.
+    feedback_correct: Correct. 735 / 5 = 147.
+    feedback_incorrect: Carry each remainder to the next digit.
+  - id: remainder-of-503-over-6
+    prompt: What is the remainder when 503 is divided by 6?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "5"
+    hints:
+      - The largest multiple of 6 not more than 503 is 6 x 83 = 498.
+    feedback_correct: Correct. 503 = 6 x 83 + 5.
+    feedback_incorrect: Subtract 498 (which is 6 x 83) from 503.
+misconceptions:
+  - description: Forgetting to bring down the next digit.
+    explanation: Skipping a bring-down drops a place value, which gives a quotient that is too small.
+    correction: For 84 / 4, bring down the 4 after the 8. 8 / 4 = 2, then 4 / 4 = 1, so 84 / 4 = 21.
+  - description: Leaving a remainder that is still at least as big as the divisor.
+    explanation: If the remainder is 6 or more when dividing by 6, the quotient digit is too small.
+    correction: Check each quotient digit. The remainder must be smaller than the divisor.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 4, 4.NBT.B.6 (find whole-number quotients with up to four-digit dividends and one-digit divisors)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

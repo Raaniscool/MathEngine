@@ -1,0 +1,97 @@
+schema_version: 1
+id: arithmetic.multiplication.repeated-addition
+title: Multiplication as repeated addition
+aliases:
+  - repeated addition
+  - equal groups
+  - groups of
+keywords:
+  - multiply
+  - multiplication
+  - repeated addition
+  - equal groups
+  - groups
+  - rows
+  - array
+  - factor
+  - product
+subject: arithmetic
+topic: multiplication
+subtopic: meaning
+difficulty: 1
+summary: A product such as 4 x 3 counts equal groups, which is the same as adding the same number repeatedly.
+definition: >-
+  Multiplication counts equal groups. 4 x 3 means four groups of three, which is 3 + 3 + 3 + 3 = 12.
+  The two factors can be swapped without changing the product, because 4 groups of 3 and 3 groups of 4
+  both make 12 objects.
+prerequisites:
+  - arithmetic.addition.whole-numbers
+related:
+  - arithmetic.multiplication.facts
+explanations:
+  - level: intro
+    text: >-
+      Three bags with 5 apples each hold 5 + 5 + 5 = 15 apples. The same total is 3 x 5.
+  - level: standard
+    text: >-
+      Rows and columns show the same idea. An array with 5 rows of 6 dots has 6 + 6 + 6 + 6 + 6 = 30 dots, so
+      5 x 6 = 30. Turning the array on its side shows 6 x 5 = 30, which is why the order does not matter.
+worked_examples:
+  - title: Writing a product as repeated addition
+    problem: Show that 4 x 3 equals 3 added together four times.
+    steps:
+      - 4 x 3 means four groups of three.
+      - 3 + 3 + 3 + 3 = 6 + 3 + 3 = 9 + 3 = 12
+      - 4 x 3 = 12
+    answer: "12"
+exercises:
+  - id: six-times-four
+    prompt: What is 6 x 4?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "24"
+    hints:
+      - Add six 4s, or four 6s.
+      - 6 + 6 + 6 + 6 = 24.
+    feedback_correct: Correct. 6 x 4 = 24.
+    feedback_incorrect: Add four groups of 6, counting on in 6s.
+  - id: seven-fours
+    prompt: What is 4 + 4 + 4 + 4 + 4 + 4 + 4 (seven 4s added together)?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "28"
+    hints:
+      - This is 7 groups of 4, so it is 7 x 4.
+    feedback_correct: Correct. Seven groups of 4 make 28.
+    feedback_incorrect: Count the number of 4s first, then multiply by 4.
+  - id: five-rows-of-six
+    prompt: A rectangle of dots has 5 rows with 6 dots in each row. How many dots are there?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "30"
+    hints:
+      - Each row has 6 dots. There are 5 rows.
+    feedback_correct: Correct. 5 rows of 6 dots make 30.
+    feedback_incorrect: Multiply the number of rows by the number of dots in each row.
+misconceptions:
+  - description: Believing that 3 x 4 and 4 x 3 are different answers.
+    explanation: Each product counts the same objects in a different arrangement.
+    correction: 3 x 4 = 4 x 3 = 12. Multiplication can be done in either order.
+  - description: Adding the factors instead of repeating one of them, so 3 x 4 = 7.
+    explanation: 3 + 4 is a single addition. The product needs three groups of four or four groups of three.
+    correction: 3 x 4 = 4 + 4 + 4 = 12.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 3, 3.OA.A.1 (interpret products of whole numbers as equal groups)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

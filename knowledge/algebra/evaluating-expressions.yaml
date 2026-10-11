@@ -1,0 +1,93 @@
+schema_version: 1
+id: algebra.expressions.evaluate
+title: Evaluating algebraic expressions
+aliases:
+  - substitution
+  - evaluate an expression
+  - plug in values
+  - evaluating expressions
+keywords:
+  - variable
+  - expression
+  - substitute
+  - substitution
+  - evaluate
+  - coefficient
+  - term
+subject: algebra
+topic: expressions
+subtopic: evaluate
+difficulty: 3
+summary: A variable stands for a number; evaluate an expression by substituting values and following the order of operations.
+definition: >-
+  A variable is a letter that stands for a number. An algebraic expression combines numbers and variables with operations, such as 3x + 5. To evaluate an expression, replace each variable with its given value, then apply the order of operations. 3x means 3 times x, so when x = 4, 3x = 12.
+prerequisites:
+  - arithmetic.operations.order-of-operations
+  - arithmetic.integers.multiply-divide
+related:
+  - algebra.expressions.like-terms
+  - algebra.expressions.distributive
+explanations:
+  - level: intro
+    text: >-
+      If a box holds x apples, then 3 boxes hold 3x apples. Choose a value for x to find the number of apples.
+  - level: standard
+    text: >-
+      Substitute with brackets to keep the signs right. For x = -3, x squared is (-3)^2 = 9, and -2x is -2 times -3 = 6.
+worked_examples:
+  - title: Evaluating a quadratic expression
+    problem: Evaluate 2x^2 - 3x + 1 when x = 4.
+    steps:
+      - Substitute x = 4. The expression becomes 2 * 4^2 - 3 * 4 + 1.
+      - 2 * 4^2 - 3 * 4 + 1 = 2 * 16 - 12 + 1 = 32 - 12 + 1 = 21
+    answer: "21"
+exercises:
+  - id: three-x-plus-five
+    prompt: Evaluate 3x + 5 when x = 4.
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "17"
+    hints:
+      - Replace x with 4, then multiply before adding.
+    feedback_correct: Correct. 3 x 4 + 5 = 17.
+    feedback_incorrect: Multiply 3 by 4 first, then add 5.
+  - id: two-a-minus-b
+    prompt: Evaluate 2a - b when a = 7 and b = 9.
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "5"
+    hints:
+      - 2a means 2 times a, so 2a = 14.
+    feedback_correct: Correct. 2 x 7 - 9 = 5.
+    feedback_incorrect: Substitute both values, then multiply before subtracting.
+  - id: x-squared-minus-two-x
+    prompt: Evaluate x^2 - 2x when x = -3.
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "15"
+    hints:
+      - x squared is (-3)^2 = 9. Then -2x is -2 times -3.
+    feedback_correct: Correct. 9 + 6 = 15.
+    feedback_incorrect: Use brackets when you substitute a negative number, so (-3)^2 is 9.
+misconceptions:
+  - description: Reading 3x as 3 + x.
+    explanation: 3x means 3 times x. Adding 3 to x is a different expression.
+    correction: With x = 4, 3x = 12, not 7.
+  - description: Squaring the sign by mistake, so (-3)^2 = -9.
+    explanation: The exponent applies to the whole negative number when it is in brackets.
+    correction: (-3)^2 = (-3) x (-3) = 9.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 6, 6.EE.A.2c (evaluate expressions at specific values of their variables)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0

@@ -1,0 +1,100 @@
+schema_version: 1
+id: arithmetic.percentages.basics
+title: Percentages
+aliases:
+  - percent
+  - percent of a number
+  - percent increase and decrease
+keywords:
+  - percent
+  - percentage
+  - per hundred
+  - discount
+  - increase
+  - decrease
+  - part of a whole
+subject: arithmetic
+topic: percentages
+subtopic: basics
+difficulty: 4
+summary: A percent is a number out of 100; a percent of a quantity is found by multiplying by the decimal equivalent.
+definition: >-
+  Percent means out of one hundred. 25 percent is 25/100, which is 0.25. To find a percent of a quantity, change the percent to a decimal and multiply: 25 percent of 80 is 0.25 x 80 = 20. To find what percent one number is of another, divide the part by the whole and multiply by 100.
+prerequisites:
+  - arithmetic.decimals.operations
+  - arithmetic.fractions.multiply
+related:
+  - arithmetic.ratios.basics
+formulas:
+  - name: Percent of a quantity
+    expression: p/100*q
+    result: p*q/100
+    variables:
+      - symbol: p
+        meaning: the percent number, for example 25 for 25 percent
+      - symbol: q
+        meaning: the quantity
+explanations:
+  - level: intro
+    text: >-
+      10 percent of anything is one tenth of it. So 10 percent of 60 is 6.
+  - level: standard
+    text: >-
+      To find what percent 10 is of 40, divide the part by the whole and multiply by 100: 10 / 40 x 100 = 25. So 10 is 25 percent of 40.
+worked_examples:
+  - title: Percent of a number
+    problem: Find 35 percent of 240.
+    steps:
+      - 35 percent means 35 out of 100, which is 0.35.
+      - 0.35 * 240 = 84
+    answer: "84"
+exercises:
+  - id: twenty-percent-of-one-fifty
+    prompt: What is 20% of 150?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "30"
+    hints:
+      - 20% is one fifth.
+    feedback_correct: Correct. 20% of 150 is 30.
+    feedback_incorrect: Change 20% to 0.2, then multiply by 150.
+  - id: fifteen-percent-increase
+    prompt: A price of 80 increases by 15%. What is the new price?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "92"
+    hints:
+      - Increase means the new price is 100% plus 15%, which is 115% of the old price.
+    feedback_correct: Correct. 80 x 1.15 = 92.
+    feedback_incorrect: Multiply 80 by 1.15, which is 100% plus 15%.
+  - id: what-percent-of-forty-is-ten
+    prompt: What percent of 40 is 10?
+    answer_type: number
+    check:
+      method: exact_numeric
+      expected: "25"
+    hints:
+      - Divide the part by the whole, then multiply by 100.
+    feedback_correct: Correct. 10 / 40 x 100 = 25.
+    feedback_incorrect: Divide 10 by 40, then multiply by 100.
+misconceptions:
+  - description: Treating a 50 percent increase followed by a 50 percent decrease as no change.
+    explanation: 100 increased by 50 percent is 150. Decreasing 150 by 50 percent gives 75, not 100.
+    correction: "The second percent applies to the new amount: 100, then 150, then 75."
+  - description: Adding the percent to the number as if it were a number of units.
+    explanation: 80 + 15 is 95, but 15 percent of 80 is only 12.
+    correction: 15 percent of 80 is 0.15 x 80 = 12, so the new price is 92.
+sources:
+  - title: Common Core State Standards for Mathematics, grade 6, 6.RP.A.3c (find a percent of a quantity as a rate per 100)
+    kind: standard
+provenance:
+  origin: ai_generated
+  author: MathEngine project (library content)
+  created: 2026-10-10
+  ai_model: Arena coding agent
+verification:
+  status: ai_draft
+  notes: AI-drafted. Exercise answers and worked-example arithmetic passed the deterministic SymPy checker. The explanation has not been reviewed by a person and is not approved for the default library.
+version: 1.0.0
